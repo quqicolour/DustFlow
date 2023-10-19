@@ -1,0 +1,76 @@
+{
+	"compiler": {
+		"version": "0.8.20+commit.a1b79de6"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "AlreadyInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NorSolder",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotBuyer",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotEnoughAmount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "TradeSuccess",
+				"type": "error"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"interfaces/IError.sol": "IError"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"interfaces/IError.sol": {
+			"keccak256": "0x115e5ac054d26e407f5e147ec25be04d41654433a4c3c7853ebdc3c092fa2ac0",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1ea3f575a3597b9c4eaec7d016bf1b45c89e81ba22a2a3a528518cf8666e52c0",
+				"dweb:/ipfs/QmSHsx2zurBUaaWCrL6bXA99gqdUdoDBocCq2QR3JuQVUz"
+			]
+		}
+	},
+	"version": 1
+}

@@ -1,0 +1,795 @@
+{
+	"compiler": {
+		"version": "0.8.20+commit.a1b79de6"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_airdropToken",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_clearingTime",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "AlreadyInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InjectAaveError",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NorSolder",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotBuyer",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotEnoughAmount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "TradeSuccess",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "Approval",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "Transfer",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "DOMAIN_SEPARATOR",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "PERMIT_TYPEHASH",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "_id",
+						"type": "uint64"
+					}
+				],
+				"name": "Sale",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "allowance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "approve",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_tokenAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint128",
+						"name": "_buyAmount",
+						"type": "uint128"
+					},
+					{
+						"internalType": "uint128",
+						"name": "_buyPrice",
+						"type": "uint128"
+					}
+				],
+				"name": "buy",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "_id",
+						"type": "uint64"
+					}
+				],
+				"name": "buyerWithdrawAirdorp",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "_id",
+						"type": "uint64"
+					}
+				],
+				"name": "buyerWithdrawRefund",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "decimals",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint128",
+						"name": "_soldPrice",
+						"type": "uint128"
+					},
+					{
+						"internalType": "uint128",
+						"name": "_soldAmount",
+						"type": "uint128"
+					}
+				],
+				"name": "getPenal",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "_id",
+						"type": "uint64"
+					}
+				],
+				"name": "getTradeMes",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint8",
+								"name": "tradeState",
+								"type": "uint8"
+							},
+							{
+								"internalType": "uint64",
+								"name": "tradeId",
+								"type": "uint64"
+							},
+							{
+								"internalType": "uint56",
+								"name": "buyTime",
+								"type": "uint56"
+							},
+							{
+								"internalType": "uint128",
+								"name": "buyTotalAmount",
+								"type": "uint128"
+							},
+							{
+								"internalType": "uint128",
+								"name": "buyPrice",
+								"type": "uint128"
+							},
+							{
+								"internalType": "uint128",
+								"name": "buyerATokenAmount",
+								"type": "uint128"
+							},
+							{
+								"internalType": "uint128",
+								"name": "solderATokenAmount",
+								"type": "uint128"
+							},
+							{
+								"internalType": "address",
+								"name": "tokenAddress",
+								"type": "address"
+							},
+							{
+								"internalType": "address",
+								"name": "buyerAddress",
+								"type": "address"
+							},
+							{
+								"internalType": "address",
+								"name": "solderAddress",
+								"type": "address"
+							}
+						],
+						"internalType": "struct ITimeStruct.tradeMes",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "_id",
+						"type": "uint64"
+					}
+				],
+				"name": "injectFutureToken",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "name",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "nonces",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "deadline",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "v",
+						"type": "uint8"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "r",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "s",
+						"type": "bytes32"
+					}
+				],
+				"name": "permit",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "_id",
+						"type": "uint64"
+					}
+				],
+				"name": "solderWithdrawStable",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "symbol",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalSupply",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "transfer",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "transferFrom",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "userIfWithdraw1",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "userIfWithdraw2",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "userIfWithdraw3",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "userIfWithdraw4",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/TimeMarket.sol": "TimeMarket"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/TFERC20.sol": {
+			"keccak256": "0xb391ed3fa08f0f35a0d50537aa4a9eb51e40d3f02d4bb50abb3913791bfb07fa",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d94665f9cc29b919cbfff40aca506b460ed9472941b16a4bff80c29185f6baa9",
+				"dweb:/ipfs/QmVdvhc1wodJ6D45wSsX31hfCPUJDSgTxUq6j59f62HqoP"
+			]
+		},
+		"contracts/TimeMarket.sol": {
+			"keccak256": "0x29755422651daefb2eddf371f91be147972d53cf93b6fd6ddde723f846ff92eb",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://195c2c6846105fd5187fb21d0b35c6821606f91dbfb06e6d0a7d9b2ae117585c",
+				"dweb:/ipfs/QmY5EmZxZx25Aiq2FoKJTGudRQRVuTjJN9sgiVa5ynRY43"
+			]
+		},
+		"interfaces/AaveV3/IPool.sol": {
+			"keccak256": "0x123b94a5f496d1cb9896971ea83139c2986717f97b1462274ffaf81799ff1668",
+			"license": "AGPL-3.0",
+			"urls": [
+				"bzz-raw://02376cb3e8237db2037566bbc4537a29d2e905570211abe34199e0382ccddb4e",
+				"dweb:/ipfs/QmWudMByihYdXEU88JitRWzoUhTdam1qbzLYvLmW5bjtVh"
+			]
+		},
+		"interfaces/AaveV3/IPoolAddressesProvider.sol": {
+			"keccak256": "0x9f3278344dafeac9c00e18a43396cf2c86cd68ad191b779d76f6ccb331d83c84",
+			"license": "AGPL-3.0",
+			"urls": [
+				"bzz-raw://70d6c66925a98aba29be5cb413caa4941359f04523cbfbdb6faf73cd419fac77",
+				"dweb:/ipfs/QmX1ieyWB4YXrDdLRJjEsuCbChzSXtZRCVvPNVwxtH2bEV"
+			]
+		},
+		"interfaces/IERC20.sol": {
+			"keccak256": "0xa426add89e9b4785ddeeb07b4d9352b57de8b4cb314c8cb8f0d5898938bd8de9",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://09852a830ad29d33cfdf74e7035853c68e43e1a8c242b25db9d656a074a54e6d",
+				"dweb:/ipfs/QmeRSfQwWr3vyP2uJxnjybtPYLMiD17E51d4eMhXQh93R1"
+			]
+		},
+		"interfaces/IERC20Metadata.sol": {
+			"keccak256": "0x5b654d5a45e51c586ac1f613ecb3ec967682286b61856b5d2d93fe08b68518da",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://95ef7f3c1eb8bae84eb34bcfe885533457236ed182ff80fbfad77ba84c8e21a1",
+				"dweb:/ipfs/QmWFdeBBHQxeHLE6SHDgZBtUqvTTgeZ19sB9yKzpm4o3o8"
+			]
+		},
+		"interfaces/IERC20Permit.sol": {
+			"keccak256": "0xc51a927b9d9ff62cf4c237f7f197827b90c460786c855c527007c02a94f23154",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d1107bf21355e8518d9fdcf1aa7052de7e5fc6d867d86d87b61b43667813cc1d",
+				"dweb:/ipfs/QmZG3AQa61MLFWmovNyuzv3iCBPnFHGV7E7CimxLwpAwKt"
+			]
+		},
+		"interfaces/IError.sol": {
+			"keccak256": "0x4310f230de4e36265042dd2494e856a037ce7ac13a7b4c78ed90e7145396a7e3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e207b6ad4c1a50f81e4ceb6404d5649e936d2c9a84495cf0daf7073c4a4e710f",
+				"dweb:/ipfs/Qmf46DDtkEMzE6JV9pnVphqY37CWkvcDtneJY4v7ZbStjQ"
+			]
+		},
+		"interfaces/ITFERC20.sol": {
+			"keccak256": "0x37811e88c13384bc8d0e2464dbe531d5afd9d8352e7bcc2b5aa1fa566b89aad5",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://590563917b78a668fe1e67649f120a82453418b30d8715c4b995a51d652d9966",
+				"dweb:/ipfs/Qmf1vitMHwgYRiNNt9zy6aBnV258YJHPG1VBwYLoe6cyNa"
+			]
+		},
+		"interfaces/ITimeStruct.sol": {
+			"keccak256": "0xe41ad4dc147443e489ea0435f31b0d6df969c31668c9b3ffd0a99a5ebd7ff930",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://75de68cb5bed7269b05fc093b491ff8070a88d29d5822b0ca61071e5b04d6122",
+				"dweb:/ipfs/QmaqvAoevVU9A8SiuQJpvhcgBc8xWouypgCR1wGoJ2HWVj"
+			]
+		},
+		"libraries/Address.sol": {
+			"keccak256": "0x0f4169fea1817f1228f6a2db5e764e2a86f357a9f42f83de1f157449bca0f1ad",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://244a3f17ec48680bfaadacf724e5b12030636dc8b3e59f01de1cf206f0802ad7",
+				"dweb:/ipfs/QmZXNxyUx2vm7LjcwtNhwYyKgqVxmbMAM3cG5bricBmL1K"
+			]
+		},
+		"libraries/DataTypes.sol": {
+			"keccak256": "0x0d49afa0af11c8201d9e301661881753c6f7c0cfc33395d57f872e1e232a8359",
+			"license": "BUSL-1.1",
+			"urls": [
+				"bzz-raw://eb2247a8c556b85c1b3c1e883f995e479e23585e00dff4883bf2ef603b4d1c42",
+				"dweb:/ipfs/QmewXn7xKEX9ekq55q2YW2LTxiwJHVBd6QhJJAMwX56znw"
+			]
+		},
+		"libraries/SafeERC20.sol": {
+			"keccak256": "0xe74183ce288c892718941897cf193167013ef062470ea7fc7f0e74c23521cdd1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://75be313f96388535ff46fc29a55ed358e24e887c5706ea595ef2ed95c1d58e03",
+				"dweb:/ipfs/QmReMXbvdgk5wZtn3mrjsDGLKFzfbBxG6HJBELLsaAKXkS"
+			]
+		},
+		"libraries/TimeFee.sol": {
+			"keccak256": "0x263efba43eaec339f5385a6c25158219d00edce75157d7cd759f3032725fcc79",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://bcb2fee6d1fa020c5a58f9de9dace4b0c09339c784b1b7888ef78ffd52faa7c0",
+				"dweb:/ipfs/QmVjYwXXg8QyvTh1dyTWp41qjyrajaqyXuATtMJqN4SRF7"
+			]
+		}
+	},
+	"version": 1
+}

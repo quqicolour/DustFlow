@@ -1,0 +1,45 @@
+{
+	"compiler": {
+		"version": "0.8.20+commit.a1b79de6"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"interfaces/ITimeStruct.sol": "ITimeStruct"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"interfaces/ITimeStruct.sol": {
+			"keccak256": "0x0afe849cb20e95bbad7d16aa2ea4d9b3b9cec028c3efeefa5fe8b34cc24f7e4b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cf85a5b15f40309babd9526c684bf3c160716e1ed3a465da6c18dd57de883a07",
+				"dweb:/ipfs/QmNYMhZPWaALPTvJbo21uyngnc2sP3JnfVRqLNCNXwGUAK"
+			]
+		}
+	},
+	"version": 1
+}

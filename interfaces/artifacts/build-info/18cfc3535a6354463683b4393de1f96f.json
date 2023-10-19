@@ -1,0 +1,260 @@
+{
+	"id": "18cfc3535a6354463683b4393de1f96f",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.20",
+	"solcLongVersion": "0.8.20+commit.a1b79de6",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"interfaces/IError.sol": {
+				"content": "//SPDX-License-Identifier:MIT\r\npragma solidity >=0.8.0;\r\n\r\ninterface IError{\r\n    //购买数量<100\r\n    error NotEnoughAmount();\r\n    //已经放入约定的空投代币数量\r\n    error AlreadyInjectToken();\r\n    //没有放入约定的空投代币数量\r\n    error NotInjectToken();\r\n    //不是购买者\r\n    error NotBuyer();\r\n    //不是出售者\r\n    error NorSolder();\r\n    //交易成功\r\n    error TradeSuccess();\r\n}"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": false,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			}
+		}
+	},
+	"output": {
+		"contracts": {
+			"interfaces/IError.sol": {
+				"IError": {
+					"abi": [
+						{
+							"inputs": [],
+							"name": "AlreadyInjectToken",
+							"type": "error"
+						},
+						{
+							"inputs": [],
+							"name": "NorSolder",
+							"type": "error"
+						},
+						{
+							"inputs": [],
+							"name": "NotBuyer",
+							"type": "error"
+						},
+						{
+							"inputs": [],
+							"name": "NotEnoughAmount",
+							"type": "error"
+						},
+						{
+							"inputs": [],
+							"name": "NotInjectToken",
+							"type": "error"
+						},
+						{
+							"inputs": [],
+							"name": "TradeSuccess",
+							"type": "error"
+						}
+					],
+					"devdoc": {
+						"kind": "dev",
+						"methods": {},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"AlreadyInjectToken\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NorSolder\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotBuyer\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotEnoughAmount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInjectToken\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"TradeSuccess\",\"type\":\"error\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"interfaces/IError.sol\":\"IError\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"interfaces/IError.sol\":{\"keccak256\":\"0x115e5ac054d26e407f5e147ec25be04d41654433a4c3c7853ebdc3c092fa2ac0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1ea3f575a3597b9c4eaec7d016bf1b45c89e81ba22a2a3a528518cf8666e52c0\",\"dweb:/ipfs/QmSHsx2zurBUaaWCrL6bXA99gqdUdoDBocCq2QR3JuQVUz\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"version": 1
+					}
+				}
+			}
+		},
+		"sources": {
+			"interfaces/IError.sol": {
+				"ast": {
+					"absolutePath": "interfaces/IError.sol",
+					"exportedSymbols": {
+						"IError": [
+							14
+						]
+					},
+					"id": 15,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								">=",
+								"0.8",
+								".0"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "31:24:0"
+						},
+						{
+							"abstract": false,
+							"baseContracts": [],
+							"canonicalName": "IError",
+							"contractDependencies": [],
+							"contractKind": "interface",
+							"fullyImplemented": true,
+							"id": 14,
+							"linearizedBaseContracts": [
+								14
+							],
+							"name": "IError",
+							"nameLocation": "69:6:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"errorSelector": "e008b5f9",
+									"id": 3,
+									"name": "NotEnoughAmount",
+									"nameLocation": "112:15:0",
+									"nodeType": "ErrorDefinition",
+									"parameters": {
+										"id": 2,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "127:2:0"
+									},
+									"src": "106:24:0"
+								},
+								{
+									"errorSelector": "42327169",
+									"id": 5,
+									"name": "AlreadyInjectToken",
+									"nameLocation": "189:18:0",
+									"nodeType": "ErrorDefinition",
+									"parameters": {
+										"id": 4,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "207:2:0"
+									},
+									"src": "183:27:0"
+								},
+								{
+									"errorSelector": "de4461cd",
+									"id": 7,
+									"name": "NotInjectToken",
+									"nameLocation": "269:14:0",
+									"nodeType": "ErrorDefinition",
+									"parameters": {
+										"id": 6,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "283:2:0"
+									},
+									"src": "263:23:0"
+								},
+								{
+									"errorSelector": "472e017e",
+									"id": 9,
+									"name": "NotBuyer",
+									"nameLocation": "321:8:0",
+									"nodeType": "ErrorDefinition",
+									"parameters": {
+										"id": 8,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "329:2:0"
+									},
+									"src": "315:17:0"
+								},
+								{
+									"errorSelector": "d7c498bf",
+									"id": 11,
+									"name": "NorSolder",
+									"nameLocation": "367:9:0",
+									"nodeType": "ErrorDefinition",
+									"parameters": {
+										"id": 10,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "376:2:0"
+									},
+									"src": "361:18:0"
+								},
+								{
+									"errorSelector": "5b949435",
+									"id": 13,
+									"name": "TradeSuccess",
+									"nameLocation": "411:12:0",
+									"nodeType": "ErrorDefinition",
+									"parameters": {
+										"id": 12,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "423:2:0"
+									},
+									"src": "405:21:0"
+								}
+							],
+							"scope": 15,
+							"src": "59:370:0",
+							"usedErrors": [
+								3,
+								5,
+								7,
+								9,
+								11,
+								13
+							],
+							"usedEvents": []
+						}
+					],
+					"src": "31:398:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}

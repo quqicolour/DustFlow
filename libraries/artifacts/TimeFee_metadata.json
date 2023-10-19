@@ -1,0 +1,45 @@
+{
+	"compiler": {
+		"version": "0.8.20+commit.a1b79de6"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"libraries/TimeFee.sol": "TimeFee"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"libraries/TimeFee.sol": {
+			"keccak256": "0x263efba43eaec339f5385a6c25158219d00edce75157d7cd759f3032725fcc79",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://bcb2fee6d1fa020c5a58f9de9dace4b0c09339c784b1b7888ef78ffd52faa7c0",
+				"dweb:/ipfs/QmVjYwXXg8QyvTh1dyTWp41qjyrajaqyXuATtMJqN4SRF7"
+			]
+		}
+	},
+	"version": 1
+}
