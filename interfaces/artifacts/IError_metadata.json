@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.20+commit.a1b79de6"
+		"version": "0.8.9+commit.e5eed63a"
 	},
 	"language": "Solidity",
 	"output": {
@@ -8,6 +8,11 @@
 			{
 				"inputs": [],
 				"name": "AlreadyInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InjectAaveError",
 				"type": "error"
 			},
 			{
@@ -51,7 +56,7 @@
 		"compilationTarget": {
 			"interfaces/IError.sol": "IError"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "london",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -64,11 +69,11 @@
 	},
 	"sources": {
 		"interfaces/IError.sol": {
-			"keccak256": "0x115e5ac054d26e407f5e147ec25be04d41654433a4c3c7853ebdc3c092fa2ac0",
+			"keccak256": "0x38487148c409f8af99a22704d03fca82d97badd4bbaf81a18dcf312c02bc9e36",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1ea3f575a3597b9c4eaec7d016bf1b45c89e81ba22a2a3a528518cf8666e52c0",
-				"dweb:/ipfs/QmSHsx2zurBUaaWCrL6bXA99gqdUdoDBocCq2QR3JuQVUz"
+				"bzz-raw://4cbe44488f86fe80821bdbd4e597feb9df05c438ef14a289b862f098b194b407",
+				"dweb:/ipfs/QmRb3Ez8Pr2LbNBwL3SpXVssATnPxfhVkQbUCEmS2e1BTv"
 			]
 		}
 	},

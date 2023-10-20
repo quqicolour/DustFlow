@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.20+commit.a1b79de6"
+		"version": "0.8.9+commit.e5eed63a"
 	},
 	"language": "Solidity",
 	"output": {
@@ -20,7 +20,7 @@
 		"compilationTarget": {
 			"interfaces/ITimeStruct.sol": "ITimeStruct"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "london",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -33,11 +33,11 @@
 	},
 	"sources": {
 		"interfaces/ITimeStruct.sol": {
-			"keccak256": "0x0afe849cb20e95bbad7d16aa2ea4d9b3b9cec028c3efeefa5fe8b34cc24f7e4b",
+			"keccak256": "0xf49859b16048171298fbcff9686d248f975f3cca81c97e4fa908a3e99f7d3c01",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://cf85a5b15f40309babd9526c684bf3c160716e1ed3a465da6c18dd57de883a07",
-				"dweb:/ipfs/QmNYMhZPWaALPTvJbo21uyngnc2sP3JnfVRqLNCNXwGUAK"
+				"bzz-raw://ce0cc1e286f65d05714adf65fc19f0efa2fafec424e71d8b69003fabc0391de0",
+				"dweb:/ipfs/QmagJiDv2KgKprJxcwAwSjmCR5DasAhx1KaK8f1N2q7gcZ"
 			]
 		}
 	},

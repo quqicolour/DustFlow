@@ -8,12 +8,13 @@ library TimeFee{
         *  amount>10000 ether,0.25%
         * other error
     */
-    function fee(uint256 stableAmount)internal pure returns(uint256 stableFee){
-        if(stableAmount>=100 ether && stableAmount<1000 ether){
+    function fee(uint8 _decimals,uint256 stableAmount)internal pure returns(uint256 stableFee){
+        uint256 digit=10**_decimals;
+        if(stableAmount>=100*digit && stableAmount<1000*digit){
             return stableAmount/100;
-        }else if(stableAmount>=1000 ether && stableAmount<10000 ether){
+        }else if(stableAmount>=1000*digit && stableAmount<10000*digit){
             return stableAmount/200;
-        }else if(stableAmount>=10000 ether){
+        }else if(stableAmount>=10000*digit){
             return stableAmount/400;
         }else{
             return 0;

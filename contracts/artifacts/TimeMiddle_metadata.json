@@ -1,28 +1,14 @@
 {
 	"compiler": {
-		"version": "0.8.19+commit.7dd6d404"
+		"version": "0.8.9+commit.e5eed63a"
 	},
 	"language": "Solidity",
 	"output": {
 		"abi": [
 			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "previousOwner",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "newOwner",
-						"type": "address"
-					}
-				],
-				"name": "OwnershipTransferred",
-				"type": "event"
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
 			},
 			{
 				"inputs": [
@@ -199,19 +185,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "owner",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -220,13 +193,6 @@
 					}
 				],
 				"name": "removeSuperVisor",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "renounceOwnership",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -253,34 +219,11 @@
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "newOwner",
-						"type": "address"
-					}
-				],
-				"name": "transferOwnership",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
 			}
 		],
 		"devdoc": {
 			"kind": "dev",
-			"methods": {
-				"owner()": {
-					"details": "Returns the address of the current owner."
-				},
-				"renounceOwnership()": {
-					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
-				},
-				"transferOwnership(address)": {
-					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
-				}
-			},
+			"methods": {},
 			"version": 1
 		},
 		"userdoc": {
@@ -293,7 +236,7 @@
 		"compilationTarget": {
 			"contracts/TimeMiddle.sol": "TimeMiddle"
 		},
-		"evmVersion": "paris",
+		"evmVersion": "london",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -305,28 +248,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"@openzeppelin/contracts/access/Ownable.sol": {
-			"keccak256": "0xba43b97fba0d32eb4254f6a5a297b39a19a247082a02d6e69349e071e2946218",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://fc980984badf3984b6303b377711220e067722bbd6a135b24669ff5069ef9f32",
-				"dweb:/ipfs/QmPHXMSXj99XjSVM21YsY6aNtLLjLVXDbyN76J5HQYvvrz"
-			]
-		},
-		"@openzeppelin/contracts/utils/Context.sol": {
-			"keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
-				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
-			]
-		},
 		"contracts/TimeMiddle.sol": {
-			"keccak256": "0x2930f813a5a29527fadf9cd6fca48eb69d13e7f8ed22fcd71872d1fc5807d1bb",
+			"keccak256": "0xd2e1d1d10c2c86ced686ad2c2e7b5091b3ac901438552f1b6078965afcaf6fe9",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://3c97306e15d274740d53402dfcce44481de6151f370a41a3ff23e7284233db20",
-				"dweb:/ipfs/QmXsJkRPEtuE9Fwdj5a4KoRBjLDHeZHYcGZfsRcnpV2j7R"
+				"bzz-raw://9a9fbeb804becac029748d204776951e436cfa1c38c4655f1e9e21b8184267da",
+				"dweb:/ipfs/QmciedQ1heiu4KdyHhkDtEFZ4QjyDyht46gibuGw6MNz99"
 			]
 		}
 	},

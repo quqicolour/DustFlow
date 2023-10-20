@@ -1,0 +1,91 @@
+{
+	"compiler": {
+		"version": "0.8.9+commit.e5eed63a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "AlreadyInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "AlreadyWithdraw",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "FailTransfer",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InjectAaveError",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NorSolder",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotBuyer",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotEnoughAmount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "TradeSuccess",
+				"type": "error"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"interfaces/ITimeMarketError.sol": "ITimeMarketError"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"interfaces/ITimeMarketError.sol": {
+			"keccak256": "0x9ab9d76ce3f3a229d327b11423355d0caa9c772683cd7348fb5fcf85660e4e1d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://dff156da92676db2d4c73926123a7898748d07052f4d6732aa85a2a67b3e4c37",
+				"dweb:/ipfs/QmQRWNFgEqXzXmNeASxpUZM7QouT3LTNq2puZE1pQB3jb2"
+			]
+		}
+	},
+	"version": 1
+}

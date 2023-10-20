@@ -58,6 +58,11 @@
 		},
 		{
 			"inputs": [],
+			"name": "InjectAaveError",
+			"type": "error"
+		},
+		{
+			"inputs": [],
 			"name": "NorSolder",
 			"type": "error"
 		},

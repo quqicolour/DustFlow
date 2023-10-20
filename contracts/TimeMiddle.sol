@@ -1,10 +1,14 @@
 //SPDX-License-Identifier: MIT
-pragma solidity >=0.8.8;
-import "@openzeppelin/contracts/access/Ownable.sol";
-contract TimeMiddle is Ownable{
+pragma solidity >=0.8.9;
+contract TimeMiddle {
     uint256 private number; //周期
     address private futureToken; //预期token
     address[] private supervisorGroup;
+    address private owner;
+
+    constructor(){
+        owner=msg.sender;
+    }
 
     mapping(uint256=>mapping(address=>uint256)) private clearTime;  //清算时间
     mapping(uint256=>uint256) private disputeIfPass; //根据争议id得到争议票数
@@ -19,6 +23,11 @@ contract TimeMiddle is Ownable{
         string disputeThing;  //争议内容
     }
     dispute[] private _dispute;
+
+    modifier onlyOwner{
+        require(msg.sender==owner,"Owner error");
+        _;
+    }
 
     //部署者设置清算时间、预期空投代币地址
     function setCleanTime(uint256 _clearTime, address airdropContract, address _futureToken)external onlyOwner{

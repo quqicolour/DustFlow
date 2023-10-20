@@ -1,0 +1,45 @@
+{
+	"compiler": {
+		"version": "0.8.9+commit.e5eed63a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"interfaces/ITimeMarketStruct.sol": "ITimeMarketStruct"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"interfaces/ITimeMarketStruct.sol": {
+			"keccak256": "0x503f94f60e182426e967da88939eafed4b386a2079023ea881ab746414f68305",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5e8462b1e845242d83424095b1397dd50e73dc78bcc0525f7d8a5e843e61a4e0",
+				"dweb:/ipfs/QmYPk1wJ7knUp75LQqgC3iwTYgyCPCsu5NiTd4AYk762V8"
+			]
+		}
+	},
+	"version": 1
+}
