@@ -1,0 +1,61 @@
+{
+	"compiler": {
+		"version": "0.8.19+commit.7dd6d404"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "AlreadyWithdraw",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "FailTransfer",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NoTFERC20",
+				"type": "error"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"interfaces/IRewardPool.sol": "IRewardPool"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"interfaces/IRewardPool.sol": {
+			"keccak256": "0x2b90fe4cc09397d6e31f5cfd6d30619705ada81303c5c27e5752bb9013b75da8",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7e65c43b9d8a689ae5b063d4377710d4319e969e08a945e5e0b693d1d3c69b1e",
+				"dweb:/ipfs/QmUjdHeinaYRX3twjeLMve2FmVaxzAj7fMH12t6L8QWJmj"
+			]
+		}
+	},
+	"version": 1
+}

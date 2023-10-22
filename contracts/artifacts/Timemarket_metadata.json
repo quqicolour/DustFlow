@@ -11,11 +11,6 @@
 						"internalType": "address",
 						"name": "_airdropToken",
 						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_clearingTime",
-						"type": "uint256"
 					}
 				],
 				"stateMutability": "nonpayable",
@@ -97,6 +92,62 @@
 					{
 						"indexed": true,
 						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount0",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount1",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					}
+				],
+				"name": "Burn",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount0",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount1",
+						"type": "uint256"
+					}
+				],
+				"name": "Mint",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
 						"name": "from",
 						"type": "address"
 					},
@@ -114,6 +165,31 @@
 					}
 				],
 				"name": "Transfer",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_time",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_userAddress",
+						"type": "address"
+					}
+				],
+				"name": "withdrawAipdrop",
 				"type": "event"
 			},
 			{
@@ -292,6 +368,43 @@
 						"type": "address"
 					},
 					{
+						"internalType": "address",
+						"name": "thisAddress",
+						"type": "address"
+					}
+				],
+				"name": "getAddressBalance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getClearTime",
+				"outputs": [
+					{
+						"internalType": "uint56",
+						"name": "",
+						"type": "uint56"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
 						"internalType": "uint128",
 						"name": "_soldPrice",
 						"type": "uint128"
@@ -376,7 +489,7 @@
 								"type": "address"
 							}
 						],
-						"internalType": "struct ITimeMarketStruct.tradeMes",
+						"internalType": "struct ITimeMarket.tradeMes",
 						"name": "",
 						"type": "tuple"
 					}
@@ -468,6 +581,45 @@
 					}
 				],
 				"name": "permit",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "rewardPoolAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint56",
+						"name": "_clearingTime",
+						"type": "uint56"
+					}
+				],
+				"name": "setClearTime",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_rewardPool",
+						"type": "address"
+					}
+				],
+				"name": "setRewardPool",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -665,115 +817,107 @@
 	},
 	"sources": {
 		"contracts/TFERC20.sol": {
-			"keccak256": "0x8c0ddb42e045123cb27b748d52a8cf3be3b45c44e1a80cbb4d83131e06add6d0",
+			"keccak256": "0xcb259500ae85fac00bdd44445d7f7c0273a629ab835289f9012c09cf16212948",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4b0d2c715760b14f089a48e8860c995f8e4a1ba863077a52ed197315b582c298",
-				"dweb:/ipfs/QmWg25qLik7gCaegf8qbYJa3JkTCVKXwY5rNcmLiz4p92K"
+				"bzz-raw://60aa107cdb6ccc96699850a0998309a4018b39119fb22d4fe138dff9fa3a54a1",
+				"dweb:/ipfs/QmWvbe6JJrHtJQXYuQaifxLn3t3hGGHyES1ioS5KAHGjyx"
 			]
 		},
 		"contracts/TimeMarket.sol": {
-			"keccak256": "0x042b8d6c4180c683f7709ec2d2723e07308af1eeb8e74155692e484c949d4391",
+			"keccak256": "0x7afc90ed5df2e4d2ca98470031dc3028ecabdece80d1906f643c9ce8ac57344f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://14763a00da40695ac58915edaad359f24242e6d0d792c7d9ce001e4e9db478de",
-				"dweb:/ipfs/QmWopnkwJzR3mHH4EpfTV2NJd34jGuFHkLCJgU3R1mEQtv"
+				"bzz-raw://69908afac37c00414c6b264b790360455bea2da2b03761870a636490e94da71f",
+				"dweb:/ipfs/QmPTTfuwKDB9ZVujt7QVvA22WiWyD6chpX2Kw1Wrnv7qaN"
 			]
 		},
 		"interfaces/AaveV3/IPool.sol": {
-			"keccak256": "0x65e09088157db6215a4b182993df552c05bb1a61feefc2c8d731b2a05e8444a6",
+			"keccak256": "0x123b94a5f496d1cb9896971ea83139c2986717f97b1462274ffaf81799ff1668",
 			"license": "AGPL-3.0",
 			"urls": [
-				"bzz-raw://541e522af7dd22ccbd5f5ed28d92b125ca6f4e5ec9c6d7f4b6d8175614fda88c",
-				"dweb:/ipfs/QmcDMpg5QNif9sBGEv6JeefvetE3Ux9cL2BazKJpMZP8uZ"
+				"bzz-raw://02376cb3e8237db2037566bbc4537a29d2e905570211abe34199e0382ccddb4e",
+				"dweb:/ipfs/QmWudMByihYdXEU88JitRWzoUhTdam1qbzLYvLmW5bjtVh"
 			]
 		},
 		"interfaces/AaveV3/IPoolAddressesProvider.sol": {
-			"keccak256": "0x1538fb5272a08f14d432299364b2148b578bb2b60869c4b78691c9a15a73dd4b",
+			"keccak256": "0x9f3278344dafeac9c00e18a43396cf2c86cd68ad191b779d76f6ccb331d83c84",
 			"license": "AGPL-3.0",
 			"urls": [
-				"bzz-raw://0f4b781d7e572c59a2427f692c3442b271900c3e7fb5cb7f9123169a8a1dbbd5",
-				"dweb:/ipfs/QmaTaQbjwkqdAs4SbFMZErVRB3FaFcVu4XubgTGvQV9WRS"
+				"bzz-raw://70d6c66925a98aba29be5cb413caa4941359f04523cbfbdb6faf73cd419fac77",
+				"dweb:/ipfs/QmX1ieyWB4YXrDdLRJjEsuCbChzSXtZRCVvPNVwxtH2bEV"
 			]
 		},
 		"interfaces/IERC20.sol": {
-			"keccak256": "0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305",
+			"keccak256": "0xa426add89e9b4785ddeeb07b4d9352b57de8b4cb314c8cb8f0d5898938bd8de9",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5",
-				"dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53"
+				"bzz-raw://09852a830ad29d33cfdf74e7035853c68e43e1a8c242b25db9d656a074a54e6d",
+				"dweb:/ipfs/QmeRSfQwWr3vyP2uJxnjybtPYLMiD17E51d4eMhXQh93R1"
 			]
 		},
 		"interfaces/IERC20Metadata.sol": {
-			"keccak256": "0x13bd6b2869c448d53df25d03d8e5ae080a71a799a8448c55b7aa6bb40acc96b4",
+			"keccak256": "0x5b654d5a45e51c586ac1f613ecb3ec967682286b61856b5d2d93fe08b68518da",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://d89cf5f9d394bd2691a934ecbf439a0cbbb55582543c57fef81d2f3d357a7184",
-				"dweb:/ipfs/QmcGMoZwn2XB85yX7ckZeSDVmHbb1wGJ2WcuF6biC9LAMJ"
+				"bzz-raw://95ef7f3c1eb8bae84eb34bcfe885533457236ed182ff80fbfad77ba84c8e21a1",
+				"dweb:/ipfs/QmWFdeBBHQxeHLE6SHDgZBtUqvTTgeZ19sB9yKzpm4o3o8"
 			]
 		},
 		"interfaces/IERC20Permit.sol": {
-			"keccak256": "0xef3037c1c9a70d45b217ccba4c06024747ab0dc66e35a8c7c60255951751a5e1",
+			"keccak256": "0xc51a927b9d9ff62cf4c237f7f197827b90c460786c855c527007c02a94f23154",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://5094efd64d245c1262e61582e71407fab028b1274de04664a6393363e780200b",
-				"dweb:/ipfs/QmNbj21wVQaUXoUKk8GWBosHzoGXewtaKcdFcDmoCFEPVx"
+				"bzz-raw://d1107bf21355e8518d9fdcf1aa7052de7e5fc6d867d86d87b61b43667813cc1d",
+				"dweb:/ipfs/QmZG3AQa61MLFWmovNyuzv3iCBPnFHGV7E7CimxLwpAwKt"
 			]
 		},
 		"interfaces/ITFERC20.sol": {
-			"keccak256": "0xbcafcbae132228583420dc3a1b39175377ca2f49d0c4159cb719e1eee54db0ad",
+			"keccak256": "0x37811e88c13384bc8d0e2464dbe531d5afd9d8352e7bcc2b5aa1fa566b89aad5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://58a343f93d6f561175027148e9519d3dc90f3d55769dd95d4d40d0d321319fd7",
-				"dweb:/ipfs/QmZTxjuRrbQRYAcrijtBCsFT4AQBcojM3GwMpxzfJ7nR6P"
+				"bzz-raw://590563917b78a668fe1e67649f120a82453418b30d8715c4b995a51d652d9966",
+				"dweb:/ipfs/Qmf1vitMHwgYRiNNt9zy6aBnV258YJHPG1VBwYLoe6cyNa"
 			]
 		},
-		"interfaces/ITimeMarketError.sol": {
-			"keccak256": "0x9ab9d76ce3f3a229d327b11423355d0caa9c772683cd7348fb5fcf85660e4e1d",
+		"interfaces/ITimeMarket.sol": {
+			"keccak256": "0xe6c03af2ff152f6181b1771b427a7d29d12b4c325a4854280f4d1d83352e4b4a",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://dff156da92676db2d4c73926123a7898748d07052f4d6732aa85a2a67b3e4c37",
-				"dweb:/ipfs/QmQRWNFgEqXzXmNeASxpUZM7QouT3LTNq2puZE1pQB3jb2"
-			]
-		},
-		"interfaces/ITimeMarketStruct.sol": {
-			"keccak256": "0x503f94f60e182426e967da88939eafed4b386a2079023ea881ab746414f68305",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://5e8462b1e845242d83424095b1397dd50e73dc78bcc0525f7d8a5e843e61a4e0",
-				"dweb:/ipfs/QmYPk1wJ7knUp75LQqgC3iwTYgyCPCsu5NiTd4AYk762V8"
+				"bzz-raw://4a1d0beb0e23ad8157b5946a729b9ddc65c085972b0af9745fbd7f12b0db8007",
+				"dweb:/ipfs/QmZe9jy4D3PD4sVfU3CpEPjDR8159KjjNH7qEQVEdUXJLY"
 			]
 		},
 		"libraries/Address.sol": {
-			"keccak256": "0x7df09cae63e000201640c3ed4f6be5684831804b88ddb9645e943b44046c883d",
+			"keccak256": "0x0f4169fea1817f1228f6a2db5e764e2a86f357a9f42f83de1f157449bca0f1ad",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ae0f580afa860d154fd410c8592198f95ede24208be5158d79d7e0ac4f5f18dd",
-				"dweb:/ipfs/QmU8ucH7aw2X64QVzgupwGB7tJZVLBBgYTEqaKh6jP9zTG"
+				"bzz-raw://244a3f17ec48680bfaadacf724e5b12030636dc8b3e59f01de1cf206f0802ad7",
+				"dweb:/ipfs/QmZXNxyUx2vm7LjcwtNhwYyKgqVxmbMAM3cG5bricBmL1K"
 			]
 		},
 		"libraries/DataTypes.sol": {
-			"keccak256": "0x7e78c783c5bed77e71a80b672a374638185e636bf4b9dc6405f64a02faa44211",
+			"keccak256": "0x0d49afa0af11c8201d9e301661881753c6f7c0cfc33395d57f872e1e232a8359",
 			"license": "BUSL-1.1",
 			"urls": [
-				"bzz-raw://3fc3e47ed4a16097a9cfa7c56fb33ad5f22f44bc9fa792c284749bb26898414e",
-				"dweb:/ipfs/QmUfmZwz9k4YiQkqVdfJrdEqxfUgknRywXEH18bhSBGb1R"
+				"bzz-raw://eb2247a8c556b85c1b3c1e883f995e479e23585e00dff4883bf2ef603b4d1c42",
+				"dweb:/ipfs/QmewXn7xKEX9ekq55q2YW2LTxiwJHVBd6QhJJAMwX56znw"
 			]
 		},
 		"libraries/SafeERC20.sol": {
-			"keccak256": "0x28e30ae1c54d6f0e7e435d9d76432c0c8bc777ad66f0b9467a5fab5266073f52",
+			"keccak256": "0xe74183ce288c892718941897cf193167013ef062470ea7fc7f0e74c23521cdd1",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6dd346cdb8da3e29c3261c69bb3317847afa99be68d298ddd5ac30be9a3bdfc5",
-				"dweb:/ipfs/Qmb1BcjGh2ZTat8Gt7Yu4y3HAaF9SeqMCs2JTBNvYVxsKj"
+				"bzz-raw://75be313f96388535ff46fc29a55ed358e24e887c5706ea595ef2ed95c1d58e03",
+				"dweb:/ipfs/QmReMXbvdgk5wZtn3mrjsDGLKFzfbBxG6HJBELLsaAKXkS"
 			]
 		},
 		"libraries/TimeFee.sol": {
-			"keccak256": "0xcd5a85ff62c5c9aedc07ddf5884b3a22b0f24646f2fea462b514b8f1709de17a",
+			"keccak256": "0x11f3d4cfa2c076a76a8f5520a3cfef03c84a6b749bb265618bf8d3075ded672c",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e8ec48891bfeea687aab15df0dc7e31b5ea4606ff8996dc1030ba36941dfb8b1",
-				"dweb:/ipfs/QmUW5UNggsReKscTsNHii4tSoNiuDAhYupMYaqbqVeYW2Q"
+				"bzz-raw://6d4f4ebf48c900dfc1d9d51bd5e23cc4d653b640facb6b23a9c097007be9e214",
+				"dweb:/ipfs/QmahEBnKc6TpAFT4bmGo1xfdjd9FCV6w5jLQ232pncnRCd"
 			]
 		}
 	},

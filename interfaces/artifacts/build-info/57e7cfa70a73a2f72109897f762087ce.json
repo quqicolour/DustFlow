@@ -1,0 +1,205 @@
+{
+	"id": "57e7cfa70a73a2f72109897f762087ce",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.21",
+	"solcLongVersion": "0.8.21+commit.d9974bed",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"interfaces/ITimeFactory.sol": {
+				"content": "//SPDX-License-Identifier:MIT\r\npragma solidity ^0.8.9;\r\n\r\ninterface ITimeFactory{\r\n    \r\n    struct timeContract{\r\n        uint256 contractId;\r\n        address contractAddress;\r\n    }\r\n}"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": false,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			}
+		}
+	},
+	"output": {
+		"contracts": {
+			"interfaces/ITimeFactory.sol": {
+				"ITimeFactory": {
+					"abi": [],
+					"devdoc": {
+						"kind": "dev",
+						"methods": {},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.21+commit.d9974bed\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"interfaces/ITimeFactory.sol\":\"ITimeFactory\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"interfaces/ITimeFactory.sol\":{\"keccak256\":\"0xb222ca2a4dab05f470624d85137651c2ffa49e094cc6dbc2a4905c2959a9845f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://272da594705de2c3272fdd515424e1fea1e144b4cb24b430e065fb176e6478e1\",\"dweb:/ipfs/QmTAYLMTUKqmHtJGKAmzDuRGN8uCK29ywtCvqr2QdUBAjS\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"version": 1
+					}
+				}
+			}
+		},
+		"sources": {
+			"interfaces/ITimeFactory.sol": {
+				"ast": {
+					"absolutePath": "interfaces/ITimeFactory.sol",
+					"exportedSymbols": {
+						"ITimeFactory": [
+							7
+						]
+					},
+					"id": 8,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".9"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "31:23:0"
+						},
+						{
+							"abstract": false,
+							"baseContracts": [],
+							"canonicalName": "ITimeFactory",
+							"contractDependencies": [],
+							"contractKind": "interface",
+							"fullyImplemented": true,
+							"id": 7,
+							"linearizedBaseContracts": [
+								7
+							],
+							"name": "ITimeFactory",
+							"nameLocation": "68:12:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"canonicalName": "ITimeFactory.timeContract",
+									"id": 6,
+									"members": [
+										{
+											"constant": false,
+											"id": 3,
+											"mutability": "mutable",
+											"name": "contractId",
+											"nameLocation": "131:10:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 6,
+											"src": "123:18:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 2,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "123:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 5,
+											"mutability": "mutable",
+											"name": "contractAddress",
+											"nameLocation": "160:15:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 6,
+											"src": "152:23:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_address",
+												"typeString": "address"
+											},
+											"typeName": {
+												"id": 4,
+												"name": "address",
+												"nodeType": "ElementaryTypeName",
+												"src": "152:7:0",
+												"stateMutability": "nonpayable",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												}
+											},
+											"visibility": "internal"
+										}
+									],
+									"name": "timeContract",
+									"nameLocation": "100:12:0",
+									"nodeType": "StructDefinition",
+									"scope": 7,
+									"src": "93:90:0",
+									"visibility": "public"
+								}
+							],
+							"scope": 8,
+							"src": "58:128:0",
+							"usedErrors": [],
+							"usedEvents": []
+						}
+					],
+					"src": "31:155:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}

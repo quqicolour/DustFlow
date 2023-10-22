@@ -19,7 +19,6 @@ contract TimeMiddle {
     struct dispute{
         uint128 disputeId; //争议id
         uint128 disputeTime;  //争议创建时间
-        string disputeName; //争议名字
         string disputeThing;  //争议内容
     }
     dispute[] private _dispute;
@@ -56,9 +55,9 @@ contract TimeMiddle {
     }
 
     //争议者创建争议内容
-    function createDispute(address _airdropContract,string calldata _disputeName,string calldata _disputeThing,uint128 _disputeId)external{
+    function createDispute(address _airdropContract,string calldata _disputeThing,uint128 _disputeId)external{
         require(block.timestamp < clearTime[number-1][_airdropContract],"Not create");  //争议内容需要在某个事务前结束前10分钟以上创建
-        _dispute.push(dispute(_disputeId,uint128(block.timestamp),_disputeName,_disputeThing));
+        _dispute.push(dispute(_disputeId,uint128(block.timestamp),_disputeThing));
     }
 
     //审查争议内容

@@ -64,11 +64,6 @@
 					},
 					{
 						"internalType": "string",
-						"name": "_disputeName",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
 						"name": "_disputeThing",
 						"type": "string"
 					},
@@ -249,11 +244,11 @@
 	},
 	"sources": {
 		"contracts/TimeMiddle.sol": {
-			"keccak256": "0xd2e1d1d10c2c86ced686ad2c2e7b5091b3ac901438552f1b6078965afcaf6fe9",
+			"keccak256": "0x5e20ea2bc1aab45d9195fef3a87d881acbab2be8328bf9bd2bd02f23f1ccb43d",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://9a9fbeb804becac029748d204776951e436cfa1c38c4655f1e9e21b8184267da",
-				"dweb:/ipfs/QmciedQ1heiu4KdyHhkDtEFZ4QjyDyht46gibuGw6MNz99"
+				"bzz-raw://10adaadd2fc36e26a43466080b1d9d2d3da2384fc1190fb03ee9c9862de84f67",
+				"dweb:/ipfs/QmQRAtMcPfVke5xtSYbQqSyouk7dsdc64V5dPJcAJrxzx4"
 			]
 		}
 	},

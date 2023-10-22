@@ -2,8 +2,7 @@
 pragma solidity >=0.8.9;
 pragma abicoder v2;
 import "../libraries/SafeERC20.sol";
-import "../interfaces/ITimeMarketStruct.sol";
-import "../interfaces/ITimeMarketError.sol";
+import "../interfaces/ITimeMarket.sol";
 import "../libraries/TimeFee.sol";
 import "../interfaces/IERC20Metadata.sol";
 
@@ -13,26 +12,28 @@ import "./TFERC20.sol";
 //aave v3
 import "../interfaces/AaveV3/IPool.sol";
 
-contract TimeMarket is ITimeMarketStruct, ITimeMarketError, TFERC20{
+contract TimeMarket is ITimeMarket, TFERC20{
     using SafeERC20 for IERC20;
-    uint56 private clearingTime;
-    uint64 id;
-    address private airdropToken;
-    address private feeAddress=0x57Ea5438bF59C87F579F9872dCBE575f46e529Fe; //费用接shou地址
-
+    uint56 private clearingTime; //清算时间
+    uint64 id;  //交易订单次数
+    address private owner;  //合约所有者
+    uint256 private totalStable;  //总质押的稳定币数量
+    address private rewardPool;  //奖励池
+    address private airdropToken;  //空投代币地址
+    address private feeAddress=0x57Ea5438bF59C87F579F9872dCBE575f46e529Fe; //费用接收地址
+    address private AUSDT=0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0;   //aave usdt=0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0
+    address private AEthUsdt=0xAF0F6e8b0Dc5c913bbF4d14c22B4E78Dd14310B6;
     bytes4 private constant SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
 
     //AAVE V3 (sepolia)
     IPool private AaveV3Pool=IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);
 
-    //aave usdt=0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0
-    address AUSDT=0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0;
-
-    constructor(address _airdropToken,uint _clearingTime){
+    constructor(address _airdropToken){
         airdropToken=_airdropToken;
-        clearingTime=uint56(_clearingTime);
+        owner=msg.sender;
     }
 
+    //记录对应下的交易信息
     mapping(uint64=>tradeMes)private _tradeMes;
     //出售者是否在交易时间结束前存入某个交易的空投代币
     mapping(address => mapping(uint256=>bool))private ifInject; 
@@ -45,6 +46,21 @@ contract TimeMarket is ITimeMarketStruct, ITimeMarketError, TFERC20{
     mapping(address => mapping(uint256=>bool))public userIfWithdraw2;
     //交易失败，购买者是否提取违约金
     mapping(address => mapping(uint256=>bool))public userIfWithdraw3;
+
+    modifier onlyOwner{
+        require(msg.sender==owner,"Not owner");
+        _;
+    }
+
+    //设置奖励池
+    function setRewardPool(address _rewardPool)external onlyOwner{
+        rewardPool=_rewardPool;
+    }
+
+    //设置清算时间
+    function setClearTime(uint56 _clearingTime)external onlyOwner{
+        clearingTime=_clearingTime;
+    }
 
     //购买(最小购买价格_buyPrice==1==0.001U)
     function buy(address _tokenAddress,uint128 _buyAmount,uint128 _buyPrice)external{
@@ -84,7 +100,8 @@ contract TimeMarket is ITimeMarketStruct, ITimeMarketError, TFERC20{
             solderAddress: address(this)
         });
         _tradeMes[id]=newTradeMes;
-        
+        //总质押稳定币数量相加新的质押数量
+        totalStable+=total;
         id++;
     }
 
@@ -119,7 +136,7 @@ contract TimeMarket is ITimeMarketStruct, ITimeMarketError, TFERC20{
         uint256 afterBalance=IERC20(AUSDT).balanceOf(address(this));
         uint128 Abalance = uint128(afterBalance-beforeBalance);
         uint128 mintAmount = Abalance==0?uint128(penalAmount):Abalance;
-
+        totalStable+=penalAmount;
         _tradeMes[_id].solderATokenAmount=mintAmount;
 
     }
@@ -146,93 +163,94 @@ contract TimeMarket is ITimeMarketStruct, ITimeMarketError, TFERC20{
     }
 
     //提取交易成功的空投代币数量（出售者按期注入空投代币）
-    function buyerWithdrawAirdorp(uint64 _id)external{
+    function buyerWithdrawAirdorp(uint64 _id)external {
         address buyer=getBuyer(_id);
         //是否是该购买者
         if(msg.sender!=buyer){revert NotBuyer();}
         //该笔交易是否出售者已经质押空投代币
         if(_tradeMes[_id].tradeState!=3){revert NotInjectToken();} 
+        //是否已经提取
+        if(userIfWithdraw1[msg.sender][_id]){revert AlreadyWithdraw();}
         uint8 decimals=IERC20Metadata(airdropToken).decimals();
         uint128 buyAmount=_tradeMes[_id].buyTotalAmount;
         uint256 withdrawAmount=buyAmount*10**decimals;
         uint128 buyerPrice=_tradeMes[_id].buyPrice;
-        uint256 beforeBalance=IERC20(airdropToken).balanceOf(address(this));
+        uint256 beforeBalance=IERC20(airdropToken).balanceOf(buyer);
+        uint256 total=buyerPrice*withdrawAmount/1000;
         //费用=购买数量*购买价格
-        uint256 fee=TimeFee.fee(decimals,buyerPrice*withdrawAmount/1000);
+        uint256 fee=TimeFee.fee(decimals,total);
         if(fee!=0){
+            IERC20(airdropToken).approve(feeAddress,fee);
             //转移费用给协议所有者
             IERC20(airdropToken).safeTransfer(feeAddress,fee);
         }
         uint256 withdrawMoney=withdrawAmount-fee;
         //转移给购买者
         IERC20(airdropToken).safeTransfer(buyer,withdrawMoney);
-        _tradeMes[_id].tradeState=4;
-        uint256 afterBalance=IERC20(airdropToken).balanceOf(address(this));
+        uint256 afterBalance=IERC20(airdropToken).balanceOf(buyer);
+        userIfWithdraw1[msg.sender][_id]=true;
         //检查交易
-        if(beforeBalance - afterBalance != withdrawMoney){
+        if(beforeBalance + withdrawMoney != afterBalance){
             revert FailTransfer();
         }
+        emit withdrawAipdrop(withdrawAmount,block.timestamp,msg.sender);
 
     }
 
     //交易成功,出售者提取稳定币
     function solderWithdrawStable(uint64 _id)external{
-        // address buyer=getBuyer(_id);
+        address buyer=getBuyer(_id);
         address solder=getSolder(_id);
+        address promiseStableToken=_tradeMes[_id].tokenAddress;
         //是否是该出售者
         if(msg.sender != solder){revert NorSolder();} 
         //交易对手是否质押相应成交的空投token
-        if(ifInject[solder][_id]==false){revert AlreadyInjectToken();}
+        if(ifInject[solder][_id]==false){revert NotInjectToken();}
         //购买者是否提取
         if(userIfWithdraw2[msg.sender][_id]){revert AlreadyWithdraw();}
-
-        address promiseStableToken=_tradeMes[_id].tokenAddress;
         uint8 decimals=IERC20Metadata(promiseStableToken).decimals();
-        uint256 buyTotal=_tradeMes[_id].buyPrice*_tradeMes[_id].buyTotalAmount;
+        uint256 stableAmount=_tradeMes[_id].buyPrice*_tradeMes[_id].buyTotalAmount*(10**decimals)/1000;
         uint256 penalSumAmount=getPenal(promiseStableToken,_tradeMes[_id].buyPrice,_tradeMes[_id].buyTotalAmount);
         // uint256 beforeBalance=IERC20(promiseStableToken).balanceOf(address(this));
         //按交易总量计算费用，质押的保证金不计入
-        uint256 fee=TimeFee.fee(decimals,buyTotal*(10**decimals)/1000);
-        //购买者的（质押金+出售者的违约金质押到aave获得的a token数量）
-        uint256 total=_tradeMes[_id].buyerATokenAmount+_tradeMes[_id].solderATokenAmount;
-        //授权给AaveV3Pool
-        IERC20(AUSDT).approve(address(AaveV3Pool),total);
-        //从aave v3提取供应的代币数量
-        AaveV3Pool.withdraw(
-            promiseStableToken,
-            total,
-            address(this)
-        );
-
-        // uint256 afterBalance=IERC20(promiseStableToken).balanceOf(address(this));
-        //转移费用给协议所有者
-        if(fee!=0){
-            //转移费用给协议所有者
+        uint256 fee=TimeFee.fee(decimals,stableAmount);
+        //合约内剩余的总mint的AEthUsdt数量
+        uint256 aTokenAmount=IERC20(AEthUsdt).balanceOf(address(this));
+        if(aTokenAmount>0){
+            //授权给AaveV3Pool
+            IERC20(AEthUsdt).approve(address(AaveV3Pool),aTokenAmount);
+            //从aave v3提取供应的代币数量
+            AaveV3Pool.withdraw(
+                promiseStableToken,
+                aTokenAmount,
+                address(this)
+            );
+        }
+        if(fee>0){
+            IERC20(promiseStableToken).approve(feeAddress,fee);
+            //转移该笔订单对应下的费用给协议所有者
             IERC20(promiseStableToken).safeTransfer(feeAddress,fee);
         }
-    
         //转移给出售者
         IERC20(promiseStableToken).safeTransfer(
             solder,
-            buyTotal+penalSumAmount-fee
+            stableAmount+penalSumAmount-fee
         );
-        //收益
-        // uint256 profit=(afterBalance-beforeBalance)-(buyTotal+penalSumAmount)>0
-        // ?(afterBalance-beforeBalance)-(buyTotal+penalSumAmount)
-        // :0;
+        //总质押稳定币-
+        totalStable=totalStable-(stableAmount+penalSumAmount);
+        //买家
+        _mint(buyer,stableAmount);
+        //卖家
+        _mint(solder,penalSumAmount);
 
-        //转移质押利润给购买者和出售者
-        // if(profit>0){
-        //     IERC20(promiseStableToken).safeTransfer(
-        //         solder,
-        //         profit*10/3
-        //     );   //30%利息
-        //     IERC20(promiseStableToken).safeTransfer(
-        //         buyer,
-        //         profit*10/7
-        //     );  //70%
-        // }
-        
+        //将获得的aave利息+本金-该池的总质押数量(如果<该池的总质押数量，则按剩余的分配)
+        uint256 totalStableAmount=IERC20(promiseStableToken).balanceOf(address(this));
+        //如果合约中的稳定币数量大于总质押的稳定币，则将利息转到奖励池
+        if(totalStableAmount-totalStable>0){
+            IERC20(promiseStableToken).approve(rewardPool,totalStableAmount-totalStable);
+            //转移到奖励池
+            IERC20(promiseStableToken).safeTransfer(rewardPool,totalStableAmount-totalStable);
+        }
         //用户提取设置为true
         userIfWithdraw2[msg.sender][_id]=true; 
     }
@@ -244,68 +262,75 @@ contract TimeMarket is ITimeMarketStruct, ITimeMarketError, TFERC20{
         //是否是该出售者
         if(msg.sender != buyer){revert NotBuyer();} 
         //交易对手是否质押相应成交的空投token
-        if(ifInject[solder][_id]){revert NotInjectToken();}
+        if(ifInject[solder][_id]){revert AlreadyInjectToken();}
         //购买者是否提取
         if(userIfWithdraw3[msg.sender][_id]){revert AlreadyWithdraw();}
 
         address promiseStableToken=_tradeMes[_id].tokenAddress;
         uint8 decimals=IERC20Metadata(promiseStableToken).decimals();
-        uint256 beforeBalance=IERC20(promiseStableToken).balanceOf(address(this));
+        uint256 mintAmount=_tradeMes[_id].buyTotalAmount*10**18;
         uint256 penalSumAmount=getPenal(promiseStableToken,_tradeMes[_id].buyPrice,_tradeMes[_id].buyTotalAmount);
-        uint256 buyTotal=_tradeMes[_id].buyPrice*_tradeMes[_id].buyTotalAmount;
+        uint256 buyTotal = (_tradeMes[_id].buyTotalAmount*10**decimals)* _tradeMes[_id].buyPrice / 1000;
         //费用(按交易失败，出售者的违约金计算)
         uint256 fee=TimeFee.fee(decimals,penalSumAmount);
-        //购买者的质押金+出售者的违约金mint的a toke数量
-        uint256 total=_tradeMes[_id].buyerATokenAmount+_tradeMes[_id].solderATokenAmount;
+
+        //合约内剩余的总mint的AEthUsdt数量
+        uint256 aTokenAmount=IERC20(AEthUsdt).balanceOf(address(this));
+        if(aTokenAmount>0){
+                //授权给AaveV3Pool
+                IERC20(AEthUsdt).approve(address(AaveV3Pool),aTokenAmount);
+                //从aave v3提取供应的代币数量
+                AaveV3Pool.withdraw(
+                    promiseStableToken,
+                    aTokenAmount,
+                    address(this)
+                );
+        }
 
         // 如果交易状态为2则代表出售者违约，如果交易状态为1则代表没有匹配到卖家，否则报错
         if(_tradeMes[_id].tradeState==2){
-            //授权给AaveV3Pool
-            IERC20(AUSDT).approve(address(AaveV3Pool),total);
-            //从aave v3提取供应的代币数量
-            AaveV3Pool.withdraw(
-                promiseStableToken,
-                total,
-                address(this)
-            );
-            //费用
-            if(fee!=0){
+            if(fee>0){
+                IERC20(promiseStableToken).approve(feeAddress,fee);
                 //转移费用给协议所有者
-                IERC20(airdropToken).safeTransfer(feeAddress,fee);
+                IERC20(promiseStableToken).safeTransfer(feeAddress,fee);
             }
-            uint256 afterBalance=IERC20(promiseStableToken).balanceOf(address(this));
-            uint256 totalMoney = (afterBalance-beforeBalance-fee)>0?(afterBalance-beforeBalance-fee):(buyTotal+penalSumAmount-fee);
+            
+            uint256 totalMoney = buyTotal+penalSumAmount-fee;
             //转移相应稳定币到购买者
             IERC20(promiseStableToken).safeTransfer(
                 buyer,
                 totalMoney
             );
+            //买家
+            _mint(buyer,mintAmount);
+            //总质押稳定币-
+            totalStable=totalStable-(buyTotal+penalSumAmount);
             userIfWithdraw3[msg.sender][_id]=true;
 
-            _tradeMes[_id].tradeState=5;
         }else if(_tradeMes[_id].tradeState==1){
-            //购买者铸造的aave的atoken
-            uint128 buyerATokenAmount=_tradeMes[_id].buyerATokenAmount;
-            //授权给AaveV3Pool
-            IERC20(AUSDT).approve(address(AaveV3Pool),buyerATokenAmount);
-            //从aave v3提取供应的代币数量
-            AaveV3Pool.withdraw(
-                promiseStableToken,
-                buyerATokenAmount,
-                address(this)
-            );
-            uint256 afterBalance=IERC20(promiseStableToken).balanceOf(address(this));
-            uint256 totalMoney = (afterBalance-beforeBalance)>0?(afterBalance-beforeBalance):(buyTotal+penalSumAmount);
-            //转移相应稳定币到购买者
+            //返还相应稳定币到购买者
             IERC20(promiseStableToken).safeTransfer(
                 buyer,
-                totalMoney
+                buyTotal
             );
+            //买家
+            _mint(buyer,mintAmount);
+            //总质押稳定币-
+            totalStable-=buyTotal;
             //取走置0
             _tradeMes[_id].tradeState=0;
             _tradeMes[_id].buyTotalAmount=0;
         }else{
             revert TradeSuccess();
+        }
+
+        //获取合约中剩余的稳定币数量
+        uint256 totalStableAmount=IERC20(promiseStableToken).balanceOf(address(this));
+        //如果合约中的稳定币数量大于总质押的稳定币，则将利息转到奖励池
+        if(totalStableAmount-totalStable>0){
+            IERC20(promiseStableToken).approve(rewardPool,totalStableAmount-totalStable);
+            //转移到奖励池
+            IERC20(promiseStableToken).safeTransfer(rewardPool,totalStableAmount-totalStable);
         }
     }
    
@@ -337,6 +362,21 @@ contract TimeMarket is ITimeMarketStruct, ITimeMarketError, TFERC20{
     //根据交易id得到_tradeMes
     function getTradeMes(uint64 _id)external view returns(tradeMes memory){
         return _tradeMes[_id];
+    }
+
+    //查找某地址的某erc20余额
+    function getAddressBalance(address token,address thisAddress)external view returns(uint256){
+        return IERC20(token).balanceOf(thisAddress);
+    }
+
+    //得到奖励池地址
+    function rewardPoolAddress()external view returns(address){
+        return rewardPool;
+    }
+
+    //返回当前清算时间
+    function getClearTime()external view returns(uint56){
+        return clearingTime;
     }
 
 }

@@ -1,0 +1,172 @@
+{
+	"compiler": {
+		"version": "0.8.21+commit.d9974bed"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "AlreadyInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "AlreadyWithdraw",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "FailTransfer",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InjectAaveError",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NorSolder",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotBuyer",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotEnoughAmount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "TradeSuccess",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount0",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount1",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					}
+				],
+				"name": "Burn",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount0",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount1",
+						"type": "uint256"
+					}
+				],
+				"name": "Mint",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_time",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_userAddress",
+						"type": "address"
+					}
+				],
+				"name": "withdrawAipdrop",
+				"type": "event"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"interfaces/ITimeMarket.sol": "ITimeMarket"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"interfaces/ITimeMarket.sol": {
+			"keccak256": "0xe6c03af2ff152f6181b1771b427a7d29d12b4c325a4854280f4d1d83352e4b4a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4a1d0beb0e23ad8157b5946a729b9ddc65c085972b0af9745fbd7f12b0db8007",
+				"dweb:/ipfs/QmZe9jy4D3PD4sVfU3CpEPjDR8159KjjNH7qEQVEdUXJLY"
+			]
+		}
+	},
+	"version": 1
+}

@@ -7,7 +7,7 @@ contract TFERC20 is ITFERC20{
     string public constant name = 'TimeFlowV1';
     string public constant symbol = 'TF-V1';
     uint8 public constant decimals = 18;
-    uint  public totalSupply;
+    uint256  public totalSupply;
     mapping(address => uint) public balanceOf;
     mapping(address => mapping(address => uint)) public allowance;
 

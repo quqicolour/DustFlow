@@ -33,11 +33,11 @@
 	},
 	"sources": {
 		"interfaces/ITimeStruct.sol": {
-			"keccak256": "0xf49859b16048171298fbcff9686d248f975f3cca81c97e4fa908a3e99f7d3c01",
+			"keccak256": "0xe41ad4dc147443e489ea0435f31b0d6df969c31668c9b3ffd0a99a5ebd7ff930",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ce0cc1e286f65d05714adf65fc19f0efa2fafec424e71d8b69003fabc0391de0",
-				"dweb:/ipfs/QmagJiDv2KgKprJxcwAwSjmCR5DasAhx1KaK8f1N2q7gcZ"
+				"bzz-raw://75de68cb5bed7269b05fc093b491ff8070a88d29d5822b0ca61071e5b04d6122",
+				"dweb:/ipfs/QmaqvAoevVU9A8SiuQJpvhcgBc8xWouypgCR1wGoJ2HWVj"
 			]
 		}
 	},

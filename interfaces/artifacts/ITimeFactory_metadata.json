@@ -1,0 +1,45 @@
+{
+	"compiler": {
+		"version": "0.8.21+commit.d9974bed"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"interfaces/ITimeFactory.sol": "ITimeFactory"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"interfaces/ITimeFactory.sol": {
+			"keccak256": "0xb222ca2a4dab05f470624d85137651c2ffa49e094cc6dbc2a4905c2959a9845f",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://272da594705de2c3272fdd515424e1fea1e144b4cb24b430e065fb176e6478e1",
+				"dweb:/ipfs/QmTAYLMTUKqmHtJGKAmzDuRGN8uCK29ywtCvqr2QdUBAjS"
+			]
+		}
+	},
+	"version": 1
+}

@@ -33,11 +33,11 @@
 	},
 	"sources": {
 		"interfaces/ITimeMarketStruct.sol": {
-			"keccak256": "0x503f94f60e182426e967da88939eafed4b386a2079023ea881ab746414f68305",
+			"keccak256": "0x4114d6ac1fe86acd976fc28fa72041415413f6f8fda118d776d226e3c3763606",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://5e8462b1e845242d83424095b1397dd50e73dc78bcc0525f7d8a5e843e61a4e0",
-				"dweb:/ipfs/QmYPk1wJ7knUp75LQqgC3iwTYgyCPCsu5NiTd4AYk762V8"
+				"bzz-raw://28561f16492539513026456ae5d96f9b370214a1f6bb77628767e608f157fa43",
+				"dweb:/ipfs/QmPmnfewPpJX1Tjpq5APM4jZqR9jZh64sxZMd4LdgozhN3"
 			]
 		}
 	},
