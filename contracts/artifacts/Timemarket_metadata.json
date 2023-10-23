@@ -715,78 +715,6 @@
 				],
 				"stateMutability": "nonpayable",
 				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "userIfWithdraw1",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "userIfWithdraw2",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "userIfWithdraw3",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -825,11 +753,11 @@
 			]
 		},
 		"contracts/TimeMarket.sol": {
-			"keccak256": "0x7afc90ed5df2e4d2ca98470031dc3028ecabdece80d1906f643c9ce8ac57344f",
+			"keccak256": "0xe10c88f263495b719fdff2efdca1da22aca8d62ecfaabcd8c48b363a5efca6a7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://69908afac37c00414c6b264b790360455bea2da2b03761870a636490e94da71f",
-				"dweb:/ipfs/QmPTTfuwKDB9ZVujt7QVvA22WiWyD6chpX2Kw1Wrnv7qaN"
+				"bzz-raw://7c20648716cae4c4bbbb127773dd9d91c2fe07d00cb69790508ad0953c633f51",
+				"dweb:/ipfs/QmfThdgoSA1WdbRyJB6xEiH2gKy8G8udXAsEEBuQVAfukn"
 			]
 		},
 		"interfaces/AaveV3/IPool.sol": {

@@ -6,11 +6,6 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [],
-				"stateMutability": "nonpayable",
-				"type": "constructor"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -40,21 +35,9 @@
 				"name": "getContractMes",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "uint256",
-								"name": "contractId",
-								"type": "uint256"
-							},
-							{
-								"internalType": "address",
-								"name": "contractAddress",
-								"type": "address"
-							}
-						],
-						"internalType": "struct ITimeFactory.timeContract",
+						"internalType": "address",
 						"name": "",
-						"type": "tuple"
+						"type": "address"
 					}
 				],
 				"stateMutability": "view",
@@ -71,19 +54,6 @@
 					}
 				],
 				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "newOwner",
-						"type": "address"
-					}
-				],
-				"name": "transferOwner",
-				"outputs": [],
-				"stateMutability": "nonpayable",
 				"type": "function"
 			}
 		],
@@ -123,19 +93,19 @@
 			]
 		},
 		"contracts/TimeFactory.sol": {
-			"keccak256": "0xc945d2f28771719100b1c26c8863c63a85955cf69e2f0770019680c8bf123613",
+			"keccak256": "0xfa872f422b0c7fa340daea5363cdc3f0374c80fb91b058c0699f7508c81a1b70",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://d81b02f30756a10efea3bd4787ab6e4f202d90edff3d4b383ce8e762f547d725",
-				"dweb:/ipfs/QmdYWdvNwYqTPuiYcFVowLtt5TT6QMXTa2f6icRDdm7rQB"
+				"bzz-raw://ed59628be642ca4c07a6490e5ca726acb6415e5a9b00f61f10ca6e1c22f8d4df",
+				"dweb:/ipfs/QmbXR8hjS2Lx9T98nzHkWbrryNBCoFpEBH8GEdZYE74XAL"
 			]
 		},
 		"contracts/TimeMarket.sol": {
-			"keccak256": "0x08e67f8ad2cf7ec35251cbf293f541c775db1f847497ce8f1cdcb4aa83830dea",
+			"keccak256": "0xe10c88f263495b719fdff2efdca1da22aca8d62ecfaabcd8c48b363a5efca6a7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://8bad51235073587c08377a9339052fbcd462febf57445eb9f22fad76ace5d16b",
-				"dweb:/ipfs/QmRgjDBGXbmo2PH2xU8Hzz11G8pNXDZ7nPqTWmhgPfJGAV"
+				"bzz-raw://7c20648716cae4c4bbbb127773dd9d91c2fe07d00cb69790508ad0953c633f51",
+				"dweb:/ipfs/QmfThdgoSA1WdbRyJB6xEiH2gKy8G8udXAsEEBuQVAfukn"
 			]
 		},
 		"interfaces/AaveV3/IPool.sol": {
@@ -184,14 +154,6 @@
 			"urls": [
 				"bzz-raw://590563917b78a668fe1e67649f120a82453418b30d8715c4b995a51d652d9966",
 				"dweb:/ipfs/Qmf1vitMHwgYRiNNt9zy6aBnV258YJHPG1VBwYLoe6cyNa"
-			]
-		},
-		"interfaces/ITimeFactory.sol": {
-			"keccak256": "0xb222ca2a4dab05f470624d85137651c2ffa49e094cc6dbc2a4905c2959a9845f",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://272da594705de2c3272fdd515424e1fea1e144b4cb24b430e065fb176e6478e1",
-				"dweb:/ipfs/QmTAYLMTUKqmHtJGKAmzDuRGN8uCK29ywtCvqr2QdUBAjS"
 			]
 		},
 		"interfaces/ITimeMarket.sol": {

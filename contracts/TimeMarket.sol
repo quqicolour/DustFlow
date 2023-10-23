@@ -40,12 +40,9 @@ contract TimeMarket is ITimeMarket, TFERC20{
     //记录用户的流动性数量
     mapping(address=>mapping(uint64=>uint)) private userLiquidity;
 
-    //交易成功，购买者是否提取空投代币
-    mapping(address => mapping(uint256=>bool))public userIfWithdraw1;
-    //交易成功，出售者是否提取稳定币
-    mapping(address => mapping(uint256=>bool))public userIfWithdraw2;
-    //交易失败，购买者是否提取违约金
-    mapping(address => mapping(uint256=>bool))public userIfWithdraw3;
+    //交易成功，购买者是否提取空投代币(交易状态>=7)
+    //交易成功，出售者是否提取稳定币(交易状态7,8,12)
+    //交易失败，购买者是否提取违约金(状态0)，或者未匹配到卖家(状态0)
 
     modifier onlyOwner{
         require(msg.sender==owner,"Not owner");
@@ -168,9 +165,9 @@ contract TimeMarket is ITimeMarket, TFERC20{
         //是否是该购买者
         if(msg.sender!=buyer){revert NotBuyer();}
         //该笔交易是否出售者已经质押空投代币
-        if(_tradeMes[_id].tradeState!=3){revert NotInjectToken();} 
+        if(ifInject[msg.sender][_id]==false){revert NotInjectToken();} 
         //是否已经提取
-        if(userIfWithdraw1[msg.sender][_id]){revert AlreadyWithdraw();}
+        if(_tradeMes[_id].tradeState>=7){revert AlreadyWithdraw();}
         uint8 decimals=IERC20Metadata(airdropToken).decimals();
         uint128 buyAmount=_tradeMes[_id].buyTotalAmount;
         uint256 withdrawAmount=buyAmount*10**decimals;
@@ -188,7 +185,7 @@ contract TimeMarket is ITimeMarket, TFERC20{
         //转移给购买者
         IERC20(airdropToken).safeTransfer(buyer,withdrawMoney);
         uint256 afterBalance=IERC20(airdropToken).balanceOf(buyer);
-        userIfWithdraw1[msg.sender][_id]=true;
+        _tradeMes[_id].tradeState+=4;
         //检查交易
         if(beforeBalance + withdrawMoney != afterBalance){
             revert FailTransfer();
@@ -207,7 +204,7 @@ contract TimeMarket is ITimeMarket, TFERC20{
         //交易对手是否质押相应成交的空投token
         if(ifInject[solder][_id]==false){revert NotInjectToken();}
         //购买者是否提取
-        if(userIfWithdraw2[msg.sender][_id]){revert AlreadyWithdraw();}
+        if(_tradeMes[_id].tradeState==8 || _tradeMes[_id].tradeState==12){revert AlreadyWithdraw();}
         uint8 decimals=IERC20Metadata(promiseStableToken).decimals();
         uint256 stableAmount=_tradeMes[_id].buyPrice*_tradeMes[_id].buyTotalAmount*(10**decimals)/1000;
         uint256 penalSumAmount=getPenal(promiseStableToken,_tradeMes[_id].buyPrice,_tradeMes[_id].buyTotalAmount);
@@ -251,8 +248,8 @@ contract TimeMarket is ITimeMarket, TFERC20{
             //转移到奖励池
             IERC20(promiseStableToken).safeTransfer(rewardPool,totalStableAmount-totalStable);
         }
-        //用户提取设置为true
-        userIfWithdraw2[msg.sender][_id]=true; 
+        //用户交易状态为5
+        _tradeMes[_id].tradeState+=5; 
     }
 
     //交易失败，购买者提取违约金（未产生交易退回money）
@@ -263,8 +260,8 @@ contract TimeMarket is ITimeMarket, TFERC20{
         if(msg.sender != buyer){revert NotBuyer();} 
         //交易对手是否质押相应成交的空投token
         if(ifInject[solder][_id]){revert AlreadyInjectToken();}
-        //购买者是否提取
-        if(userIfWithdraw3[msg.sender][_id]){revert AlreadyWithdraw();}
+        //购买者是否提取(状态0)
+        if(_tradeMes[_id].tradeState==0){revert AlreadyWithdraw();}
 
         address promiseStableToken=_tradeMes[_id].tokenAddress;
         uint8 decimals=IERC20Metadata(promiseStableToken).decimals();
@@ -305,7 +302,8 @@ contract TimeMarket is ITimeMarket, TFERC20{
             _mint(buyer,mintAmount);
             //总质押稳定币-
             totalStable=totalStable-(buyTotal+penalSumAmount);
-            userIfWithdraw3[msg.sender][_id]=true;
+            //如果违约用户提取后状态更置为0
+            _tradeMes[_id].tradeState=0;
 
         }else if(_tradeMes[_id].tradeState==1){
             //返还相应稳定币到购买者
@@ -321,7 +319,7 @@ contract TimeMarket is ITimeMarket, TFERC20{
             _tradeMes[_id].tradeState=0;
             _tradeMes[_id].buyTotalAmount=0;
         }else{
-            revert TradeSuccess();
+            revert FailTransfer();
         }
 
         //获取合约中剩余的稳定币数量
