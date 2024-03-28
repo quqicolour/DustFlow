@@ -1,0 +1,45 @@
+{
+	"compiler": {
+		"version": "0.8.19+commit.7dd6d404"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"interfaces/ITimeManager.sol": "ITimeMana"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"interfaces/ITimeManager.sol": {
+			"keccak256": "0xbf839f820e6c2bd56c5e307dd790328d2d63c258c31457d889723fbc5aef65ae",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cf9527bca1cf9fda398c573b616398f8d65786c4d2c565f401cbb31d600b2ae8",
+				"dweb:/ipfs/QmerDD3dJbmjTrZX9NWnd3guHFecaztWcAY6tEnmxknTBc"
+			]
+		}
+	},
+	"version": 1
+}
