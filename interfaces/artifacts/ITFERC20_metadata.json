@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.20+commit.a1b79de6"
+		"version": "0.8.9+commit.e5eed63a"
 	},
 	"language": "Solidity",
 	"output": {
@@ -83,49 +83,6 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "spender",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "value",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "deadline",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint8",
-						"name": "v",
-						"type": "uint8"
-					},
-					{
-						"internalType": "bytes32",
-						"name": "r",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "bytes32",
-						"name": "s",
-						"type": "bytes32"
-					}
-				],
-				"name": "permit",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
 						"name": "to",
 						"type": "address"
 					},
@@ -191,7 +148,7 @@
 		"compilationTarget": {
 			"interfaces/ITFERC20.sol": "ITFERC20"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "london",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -204,11 +161,11 @@
 	},
 	"sources": {
 		"interfaces/ITFERC20.sol": {
-			"keccak256": "0x9db648d5aa8ba5eb90006a17caee06d7c4a65262ca0a4a5e57e0f729804478b0",
+			"keccak256": "0xa6d0739cdd5373269c0c745888e901e62127a0ee154578f99c4a8fb3bc4dd53c",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://26c4af8fec23d2f64c18b33bfbfd4e32af1c5cda9c79fd81025ca123cb857261",
-				"dweb:/ipfs/QmXkBSMGihM2YUdkYQ3pXxrvZwvHesozuYeUHiZHg7nnpz"
+				"bzz-raw://6bf2cc97038d5c964ebb21fe14c27d69a024b10576ac885fe0e31051a6828d5e",
+				"dweb:/ipfs/QmUqv94YNfaPKppkJ8EzsF9vGWsS8pANycuD3ZaUW4JKdk"
 			]
 		}
 	},

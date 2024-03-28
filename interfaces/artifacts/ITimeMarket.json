@@ -63,6 +63,11 @@
 		},
 		{
 			"inputs": [],
+			"name": "FailTrade",
+			"type": "error"
+		},
+		{
+			"inputs": [],
 			"name": "FailTransfer",
 			"type": "error"
 		},
@@ -83,12 +88,22 @@
 		},
 		{
 			"inputs": [],
+			"name": "NotEndTime",
+			"type": "error"
+		},
+		{
+			"inputs": [],
 			"name": "NotEnoughAmount",
 			"type": "error"
 		},
 		{
 			"inputs": [],
 			"name": "NotInjectToken",
+			"type": "error"
+		},
+		{
+			"inputs": [],
+			"name": "OverTime",
 			"type": "error"
 		},
 		{

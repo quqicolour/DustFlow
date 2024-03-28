@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.18+commit.87f61d96"
+		"version": "0.8.19+commit.7dd6d404"
 	},
 	"language": "Solidity",
 	"output": {
@@ -13,6 +13,11 @@
 			{
 				"inputs": [],
 				"name": "AlreadyWithdraw",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "FailTrade",
 				"type": "error"
 			},
 			{
@@ -37,12 +42,22 @@
 			},
 			{
 				"inputs": [],
+				"name": "NotEndTime",
+				"type": "error"
+			},
+			{
+				"inputs": [],
 				"name": "NotEnoughAmount",
 				"type": "error"
 			},
 			{
 				"inputs": [],
 				"name": "NotInjectToken",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "OverTime",
 				"type": "error"
 			},
 			{
@@ -160,11 +175,11 @@
 	},
 	"sources": {
 		"interfaces/ITimeMarket.sol": {
-			"keccak256": "0xe6c03af2ff152f6181b1771b427a7d29d12b4c325a4854280f4d1d83352e4b4a",
+			"keccak256": "0x45b202e7b66c67d6b9619dfd1719f7cf1cb6ab85d2652f6b90e7e7a85fa09a7a",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4a1d0beb0e23ad8157b5946a729b9ddc65c085972b0af9745fbd7f12b0db8007",
-				"dweb:/ipfs/QmZe9jy4D3PD4sVfU3CpEPjDR8159KjjNH7qEQVEdUXJLY"
+				"bzz-raw://795fe6245e8713f028e90e38a85d7daaf343fdd3fb55db163b1e8035138f91a4",
+				"dweb:/ipfs/QmejHd37qXVBUTDS3noAqNUneHbpwAUsizaoRyioSQQvp2"
 			]
 		}
 	},

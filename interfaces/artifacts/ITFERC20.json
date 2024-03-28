@@ -50,7 +50,6 @@
 		"gasEstimates": null,
 		"methodIdentifiers": {
 			"approve(address,uint256)": "095ea7b3",
-			"permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": "d505accf",
 			"transfer(address,uint256)": "a9059cbb",
 			"transferFrom(address,address,uint256)": "23b872dd"
 		}
@@ -127,49 +126,6 @@
 					"type": "bool"
 				}
 			],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "owner",
-					"type": "address"
-				},
-				{
-					"internalType": "address",
-					"name": "spender",
-					"type": "address"
-				},
-				{
-					"internalType": "uint256",
-					"name": "value",
-					"type": "uint256"
-				},
-				{
-					"internalType": "uint256",
-					"name": "deadline",
-					"type": "uint256"
-				},
-				{
-					"internalType": "uint8",
-					"name": "v",
-					"type": "uint8"
-				},
-				{
-					"internalType": "bytes32",
-					"name": "r",
-					"type": "bytes32"
-				},
-				{
-					"internalType": "bytes32",
-					"name": "s",
-					"type": "bytes32"
-				}
-			],
-			"name": "permit",
-			"outputs": [],
 			"stateMutability": "nonpayable",
 			"type": "function"
 		},

@@ -4,50 +4,41 @@ pragma solidity ^0.8.9;
 import "../interfaces/ITFERC20.sol";
 
 contract TFERC20 is ITFERC20{
-    string public constant name = 'TimeFlowV1';
-    string public constant symbol = 'TF-V1';
-    uint8 public constant decimals = 18;
-    uint256  public totalSupply;
-    mapping(address => uint) public balanceOf;
-    mapping(address => mapping(address => uint)) public allowance;
+    string private _name;
+    string private _symbol;
+    uint8 private constant _decimals = 18;
+    uint256 private _totalSupply;
+    address private owner;
+    mapping(address => uint) private _balanceOf;
+    mapping(address => mapping(address => uint)) private _allowance;
 
-    bytes32 public DOMAIN_SEPARATOR;
-    // keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
-    bytes32 public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
-    mapping(address => uint) public nonces;
-
-    constructor() {
-        DOMAIN_SEPARATOR = keccak256(
-            abi.encode(
-                keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'),
-                keccak256(bytes(name)),
-                keccak256(bytes('1')),
-                block.chainid,
-                address(this)
-            )
-        );
+    function setNameAndSymbol(string memory thisName,string memory thisSymbol)external {
+        require(msg.sender==owner);
+        _name=thisName;
+        _symbol=thisSymbol;
     }
 
-    function _mint(address to, uint value) internal {
-        totalSupply += value ;
-        balanceOf[to] += value;
+    function _mint(address to, uint value) internal returns(bool){
+        _totalSupply += value ;
+        _balanceOf[to] += value;
         emit Transfer(address(0), to, value);
+        return true;
     }
 
     function _burn(address from, uint value) internal {
-        balanceOf[from] -= value;
-        totalSupply -= value;
+        _balanceOf[from] -= value;
+        _totalSupply -= value;
         emit Transfer(from, address(0), value);
     }
 
     function _approve(address owner, address spender, uint value) private {
-        allowance[owner][spender] = value;
+        _allowance[owner][spender] = value;
         emit Approval(owner, spender, value);
     }
 
     function _transfer(address from, address to, uint value) private {
-        balanceOf[from] = balanceOf[from] - value;
-        balanceOf[to] = balanceOf[to] + value;
+        _balanceOf[from] = _balanceOf[from] - value;
+        _balanceOf[to] = _balanceOf[to] + value;
         emit Transfer(from, to, value);
     }
 
@@ -62,24 +53,36 @@ contract TFERC20 is ITFERC20{
     }
 
     function transferFrom(address from, address to, uint value) external returns (bool) {
-        if (allowance[from][msg.sender] >= 0) {
-            allowance[from][msg.sender] = allowance[from][msg.sender] - value;
+        if (_allowance[from][msg.sender] >= 0) {
+            _allowance[from][msg.sender] = _allowance[from][msg.sender] - value;
         }
         _transfer(from, to, value);
         return true;
     }
 
-    function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external {
-        require(deadline >= block.timestamp, "TimeFlowV1: EXPIRED");
-        bytes32 digest = keccak256(
-            abi.encodePacked(
-                '\x19\x01',
-                DOMAIN_SEPARATOR,
-                keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, nonces[owner]++, deadline))
-            )
-        );
-        address recoveredAddress = ecrecover(digest, v, r, s);
-        require(recoveredAddress != address(0) && recoveredAddress == owner, 'UniswapV2: INVALID_SIGNATURE');
-        _approve(owner, spender, value);
+    function totalSupply()external view returns(uint256){
+        return _totalSupply;
     }
+
+    function name()external view returns(string memory){
+        return _name;
+    }
+
+    function symbol() public view returns (string memory) {
+        return _symbol;
+    }
+
+    function decimals() public pure returns (uint8) {
+        return _decimals;
+    }
+
+    function balanceOf(address account) public view returns (uint256) {
+        return _balanceOf[account];
+    }
+ 
+    function allowance(address owner, address spender) public view returns (uint256) {
+        return _allowance[owner][spender];
+    }
+
+
 }

@@ -9,6 +9,15 @@ import {IERC165} from "../interfaces/IERC165.sol";
  * @dev Required interface of an ERC721 compliant contract.
  */
 interface IERC721 is IERC165 {
+
+    struct nftTradeIdMes{
+        uint256 tradeId;
+        uint256 nftId;
+        uint256 state;
+        uint256 value;
+        address token;
+    }
+
     /**
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
      */
@@ -23,6 +32,10 @@ interface IERC721 is IERC165 {
      * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
      */
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+
+    event MintValue(address indexed sender,uint256 indexed tokenId,uint256 amount);
+
+    event Burn(uint256 indexed tokenId);
 
     /**
      * @dev Returns the number of tokens in ``owner``'s account.
@@ -116,6 +129,14 @@ interface IERC721 is IERC165 {
      * Emits an {ApprovalForAll} event.
      */
     function setApprovalForAll(address operator, bool approved) external;
+
+    function marketMint(address receiver,uint256 tradeId,uint256 value,uint256 state,address token)external returns(bool);
+    //burn nft
+    function burnNft(uint256 tokenId) external returns(bool);
+
+    function getuserTradeNftId(address userAddress,uint256 tradeId)external view returns(uint256);
+
+    function getNftTradeIdMes(uint256 tokenId)external view returns(nftTradeIdMes memory);
 
     /**
      * @dev Returns the account approved for `tokenId` token.

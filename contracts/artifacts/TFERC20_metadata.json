@@ -1,15 +1,10 @@
 {
 	"compiler": {
-		"version": "0.8.19+commit.7dd6d404"
+		"version": "0.8.9+commit.e5eed63a"
 	},
 	"language": "Solidity",
 	"output": {
 		"abi": [
-			{
-				"inputs": [],
-				"stateMutability": "nonpayable",
-				"type": "constructor"
-			},
 			{
 				"anonymous": false,
 				"inputs": [
@@ -61,41 +56,15 @@
 				"type": "event"
 			},
 			{
-				"inputs": [],
-				"name": "DOMAIN_SEPARATOR",
-				"outputs": [
-					{
-						"internalType": "bytes32",
-						"name": "",
-						"type": "bytes32"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "PERMIT_TYPEHASH",
-				"outputs": [
-					{
-						"internalType": "bytes32",
-						"name": "",
-						"type": "bytes32"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "",
+						"name": "owner",
 						"type": "address"
 					},
 					{
 						"internalType": "address",
-						"name": "",
+						"name": "spender",
 						"type": "address"
 					}
 				],
@@ -138,7 +107,7 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "",
+						"name": "account",
 						"type": "address"
 					}
 				],
@@ -163,7 +132,7 @@
 						"type": "uint8"
 					}
 				],
-				"stateMutability": "view",
+				"stateMutability": "pure",
 				"type": "function"
 			},
 			{
@@ -177,68 +146,6 @@
 					}
 				],
 				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"name": "nonces",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "owner",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "spender",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "value",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "deadline",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint8",
-						"name": "v",
-						"type": "uint8"
-					},
-					{
-						"internalType": "bytes32",
-						"name": "r",
-						"type": "bytes32"
-					},
-					{
-						"internalType": "bytes32",
-						"name": "s",
-						"type": "bytes32"
-					}
-				],
-				"name": "permit",
-				"outputs": [],
-				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -336,7 +243,7 @@
 		"compilationTarget": {
 			"contracts/TFERC20.sol": "TFERC20"
 		},
-		"evmVersion": "paris",
+		"evmVersion": "london",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -349,19 +256,19 @@
 	},
 	"sources": {
 		"contracts/TFERC20.sol": {
-			"keccak256": "0xcb259500ae85fac00bdd44445d7f7c0273a629ab835289f9012c09cf16212948",
+			"keccak256": "0x443cf651a9d2079c5eae916615fae36a3352e8818e38c5936787b8977ffd7462",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://60aa107cdb6ccc96699850a0998309a4018b39119fb22d4fe138dff9fa3a54a1",
-				"dweb:/ipfs/QmWvbe6JJrHtJQXYuQaifxLn3t3hGGHyES1ioS5KAHGjyx"
+				"bzz-raw://d6f27485187e5b81d6d2ee02ada187692487c162d41235f0af01526fb1b29d27",
+				"dweb:/ipfs/QmbBp1xacxP8fPzbiHPzYwRuzDCpfhxZD8SycoHZr7Sd1g"
 			]
 		},
 		"interfaces/ITFERC20.sol": {
-			"keccak256": "0x37811e88c13384bc8d0e2464dbe531d5afd9d8352e7bcc2b5aa1fa566b89aad5",
+			"keccak256": "0xa6d0739cdd5373269c0c745888e901e62127a0ee154578f99c4a8fb3bc4dd53c",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://590563917b78a668fe1e67649f120a82453418b30d8715c4b995a51d652d9966",
-				"dweb:/ipfs/Qmf1vitMHwgYRiNNt9zy6aBnV258YJHPG1VBwYLoe6cyNa"
+				"bzz-raw://6bf2cc97038d5c964ebb21fe14c27d69a024b10576ac885fe0e31051a6828d5e",
+				"dweb:/ipfs/QmUqv94YNfaPKppkJ8EzsF9vGWsS8pANycuD3ZaUW4JKdk"
 			]
 		}
 	},
