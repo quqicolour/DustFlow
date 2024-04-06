@@ -36,8 +36,11 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
     // Mapping from token ID to approved address
     mapping(uint256 => address) private _tokenApprovals;
 
+    //记录购买订单对应的NFT ID
+    mapping(uint256=>uint256) private buyTradeIdToNftId;
+
     //记录用户对应订单的nft id
-    mapping(address=>mapping(uint256=>uint256))private userTradeNftId;
+    mapping(address=>mapping(uint256=>mapping(uint256=>uint256)))private userTradeNftId;
 
     // Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
@@ -45,7 +48,7 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
     mapping(uint256=>nftTradeIdMes)private _nftTradeIdMes;
 
     modifier onlyMarket{
-        require(msg.sender==timeMarket);
+        require(msg.sender==timeMarket,"Non market");
         _;
     }
 
@@ -59,13 +62,10 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
             super.supportsInterface(interfaceId);
     }
 
-    function initializeTokenShow(string memory _name,string memory _symbol)external onlyOwner{
+    function initialize(string memory _name,string memory _symbol,address _timeMarket,address _timeGovern)external{
+        require(initState==false);
         thisName = _name;
         thisSymbol = _symbol;
-    }
-
-    function initialize(address _timeMarket,address _timeGovern)external onlyOwner{
-        require(initState==false);
         timeMarket=_timeMarket;
         timeGovern=_timeGovern;
         initState=true;
@@ -126,7 +126,7 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
      */
     function approve(address to, uint256 tokenId) public override {
         address owner = TimeERC721.ownerOf(tokenId);
-        require(to != owner, "Same address");
+        require(to != owner);
 
         require(
             _msgSender() == owner || isApprovedForAll(owner, _msgSender()),
@@ -165,7 +165,7 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
     function transferFrom(address from, address to, uint256 tokenId) public override {
         //solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(_msgSender(), tokenId), "Non caller");
-        require(_updataTradeNftId(from,to,tokenId),"Updata fail");
+        if(_updataTradeNftId(from,to,tokenId)==false){revert FailUpdata();}
         _transfer(from, to, tokenId);
     }
 
@@ -173,7 +173,7 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
      * @dev See {IERC721-safeTransferFrom}.
      */
     function safeTransferFrom(address from, address to, uint256 tokenId) public override {
-        require(_updataTradeNftId(from,to,tokenId),"Updata fail");
+        if(_updataTradeNftId(from,to,tokenId)==false){revert FailUpdata();}
         safeTransferFrom(from, to, tokenId, "");
     }
 
@@ -182,24 +182,35 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
      */
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "Non caller");
-        require(_updataTradeNftId(from,to,tokenId),"Updata fail");
+        if(_updataTradeNftId(from,to,tokenId)==false){revert FailUpdata();}
         _safeTransfer(from, to, tokenId, data);
     }
 
     //market mint
-    function marketMint(address receiver,uint256 tradeId,uint256 value,uint256 state,address token)external onlyMarket returns(bool){
+    function marketMint(address receiver,uint32 tradeId,uint256 value,uint256 state,address token)external onlyMarket returns(uint256){
+        address thisReceiver;
         _mint(receiver,id);
-        userTradeNftId[receiver][tradeId]=id;
+        if(state==0){
+            buyTradeIdToNftId[tradeId]=id;
+        }
+        if(state==2){
+            uint256 nftId=buyTradeIdToNftId[tradeId];
+            thisReceiver=_ownerOf(nftId);
+        }else{
+            thisReceiver=receiver;
+        }
+        userTradeNftId[thisReceiver][tradeId][state]=id;
         _nftTradeIdMes[id]=nftTradeIdMes({
             tradeId:tradeId,
+            startTime:uint32(block.timestamp),
             nftId:id,
             state:state,
             value:value,
             token:token
         });
+        emit MintValue(receiver,id,value);
         id++;
-        emit MintValue(receiver,id-1,value);
-        return true;
+        return 1;
     }
 
     //burn nft
@@ -208,8 +219,12 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
         return true;
     }
 
-    function getuserTradeNftId(address userAddress,uint256 tradeId)public view returns(uint256){
-        return userTradeNftId[userAddress][tradeId];
+    function getNftTradeIdValue(uint256 tokenId)public view returns(uint256){
+        return _nftTradeIdMes[tokenId].value;
+    }
+
+    function getuserTradeNftId(address userAddress,uint256 tradeId,uint256 state)public view returns(uint256){
+        return userTradeNftId[userAddress][tradeId][state];
     }
 
     function getNftTradeIdMes(uint256 tokenId)external view returns(nftTradeIdMes memory){
@@ -248,8 +263,9 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
 
     function _updataTradeNftId(address from, address to, uint256 tokenId)internal returns(bool){
         uint256 tradeId=_nftTradeIdMes[id].tradeId;
-        userTradeNftId[to][tradeId]=tokenId;
-        delete userTradeNftId[from][tradeId];
+        uint256 state=_nftTradeIdMes[tokenId].state;
+        userTradeNftId[to][tradeId][state]=tokenId;
+        delete userTradeNftId[from][tradeId][state];
         return true;
     }
 
@@ -282,32 +298,6 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
     function _isApprovedOrOwner(address spender, uint256 tokenId) internal view returns (bool) {
         address owner = TimeERC721.ownerOf(tokenId);
         return (spender == owner || isApprovedForAll(owner, spender) || getApproved(tokenId) == spender);
-    }
-
-    /**
-     * @dev Safely mints `tokenId` and transfers it to `to`.
-     *
-     * Requirements:
-     *
-     * - `tokenId` must not exist.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-     *
-     * Emits a {Transfer} event.
-     */
-    function _safeMint(address to, uint256 tokenId) internal {
-        _safeMint(to, tokenId, "");
-    }
-
-    /**
-     * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
-     * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
-     */
-    function _safeMint(address to, uint256 tokenId, bytes memory data) internal {
-        _mint(to, tokenId);
-        require(
-            _checkOnERC721Received(address(0), to, tokenId, data),
-            "Non ERC721Receiver implementer"
-        );
     }
 
     /**

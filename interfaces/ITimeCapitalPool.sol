@@ -1,7 +1,7 @@
 //SPDX-License-Identifier:MIT
 pragma solidity ^0.8.9;
-
-interface ITimeCapitalPool{
+import "../interfaces/IERC721.sol";
+interface ITimeCapitalPool is IERC721{
 
     struct withdrawMes{
         uint32 tradeId;

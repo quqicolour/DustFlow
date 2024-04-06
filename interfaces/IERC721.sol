@@ -11,12 +11,15 @@ import {IERC165} from "../interfaces/IERC165.sol";
 interface IERC721 is IERC165 {
 
     struct nftTradeIdMes{
-        uint256 tradeId;
+        uint32 tradeId;
+        uint32 startTime;
         uint256 nftId;
         uint256 state;
         uint256 value;
         address token;
     }
+
+    error FailUpdata();
 
     /**
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
@@ -130,11 +133,13 @@ interface IERC721 is IERC165 {
      */
     function setApprovalForAll(address operator, bool approved) external;
 
-    function marketMint(address receiver,uint256 tradeId,uint256 value,uint256 state,address token)external returns(bool);
+    function marketMint(address receiver,uint32 tradeId,uint256 value,uint256 state,address token)external returns(uint256);
     //burn nft
     function burnNft(uint256 tokenId) external returns(bool);
 
-    function getuserTradeNftId(address userAddress,uint256 tradeId)external view returns(uint256);
+    function getNftTradeIdValue(uint256 tokenId)external view returns(uint256);
+
+    function getuserTradeNftId(address userAddress,uint256 tradeId,uint256 state)external view returns(uint256);
 
     function getNftTradeIdMes(uint256 tokenId)external view returns(nftTradeIdMes memory);
 

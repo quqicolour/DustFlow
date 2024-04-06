@@ -1,0 +1,287 @@
+{
+  "name": "TimeMarket",
+  "address": "0xf4820cF73b43B957E0Cf32aF7CCCbd290c065e80",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "_id",
+          "type": "uint32"
+        },
+        {
+          "internalType": "address",
+          "name": "aToken",
+          "type": "address"
+        }
+      ],
+      "name": "cancelOrder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_pool",
+          "type": "address"
+        }
+      ],
+      "name": "changeAaveV3Pool",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "_id",
+          "type": "uint32"
+        }
+      ],
+      "name": "deposite",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_timeCapitalPool",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_timeGovern",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "_id",
+          "type": "uint32"
+        }
+      ],
+      "name": "matchTrade",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_tokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint32",
+          "name": "_price",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint128",
+          "name": "_amount",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "doState",
+          "type": "uint256"
+        }
+      ],
+      "name": "putTrade",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "_id",
+          "type": "uint32"
+        },
+        {
+          "internalType": "address",
+          "name": "aToken",
+          "type": "address"
+        }
+      ],
+      "name": "refund",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_thisMarketId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "tradeId",
+          "type": "uint32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "receiver",
+          "type": "address"
+        }
+      ],
+      "name": "RefundEvent",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "_id",
+          "type": "uint32"
+        }
+      ],
+      "name": "getTradeMes",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint32",
+              "name": "tradeId",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "price",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint56",
+              "name": "time",
+              "type": "uint56"
+            },
+            {
+              "internalType": "uint128",
+              "name": "amount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tokenOneAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "usedToken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "buyerAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "sellerAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "enum TimeLibrary.tradeState",
+              "name": "_tradeState",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct TimeLibrary.tradeMes",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "_id",
+          "type": "uint32"
+        },
+        {
+          "internalType": "address",
+          "name": "userAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getUserDeposite",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint32",
+              "name": "tradeId",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint56",
+              "name": "startTime",
+              "type": "uint56"
+            },
+            {
+              "internalType": "uint56",
+              "name": "endTime",
+              "type": "uint56"
+            },
+            {
+              "internalType": "uint256",
+              "name": "depositeAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "earnAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct TimeLibrary.userDeposite",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "filePath": " - connect to localhost - /contracts/TimeMarket.sol",
+  "pinnedAt": 1711619525571
+}

@@ -5,10 +5,8 @@ import "../libraries/TimeLibrary.sol";
 import "../interfaces/ITimeMarket.sol";
 import "../interfaces/IERC20Metadata.sol";
 import "../interfaces/ITimeMarketFactory.sol";
-import "../interfaces/ITimeCapitalPoolFactory.sol";
 import "../interfaces/ITimeCapitalPool.sol";
 import "../interfaces/ITimeGovern.sol";
-import "../interfaces/IERC721.sol";
 
 //aave v3
 import "../interfaces/AaveV3/IPool.sol";
@@ -19,50 +17,45 @@ contract TimeMarket is ITimeMarket{
     using SafeERC20 for IERC20;
     uint32 private id;  //交易订单次数
     uint256 private thisMarketId;
-    uint256 private totalStable;  //总质押的稳定币数量
 
     bool private initState;
 
-    address private owner;  
-    address private timeCapitalPoolFactory;
+    address private timeCapitalPool;
     address private timeGovern;
-    address private timeERC721;
 
     // address private AUSDT=0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0;   //aave usdt=0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0
     // address private AEthUsdt=0xAF0F6e8b0Dc5c913bbF4d14c22B4E78Dd14310B6;
 
     //AAVE V3 (sepolia)
-    IPool private AaveV3Pool=IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);
+    IPool private AaveV3Pool=IPool(0xcC6114B983E4Ed2737E9BD3961c9924e6216c704);
 
     constructor(uint256 _thisMarketId){
         thisMarketId=_thisMarketId;
-        owner=msg.sender;
     }
 
     //记录对应下的交易信息
     mapping(uint32=>TimeLibrary.tradeMes)private _tradeMes;
-    //
-    mapping(uint32=>mapping(address=>TimeLibrary.userDeposite))private _userDeposite;
     //记录用户的流动性数量
     mapping(address=>mapping(uint64=>uint)) private userLiquidity;
 
-    function initialize(address _timeERC721,address _timeCapitalPoolFactory,address _timeGovern)external{
-        require(msg.sender==owner,"Non owner");
+    function initialize(address _timeCapitalPool,address _timeGovern)external{
         require(initState==false,"Already init");
-        timeERC721=_timeERC721;
-        timeCapitalPoolFactory=_timeCapitalPoolFactory;
+        timeCapitalPool=_timeCapitalPool;
         timeGovern=_timeGovern;
         initState=true;
     }
 
+    function changeAaveV3Pool(address _pool)external{
+        AaveV3Pool=IPool(_pool);
+    }
+
     //挂单(买卖)
-    function putTrade(address _tokenAddress,uint32 _price,uint128 _amount,uint256 doState)external{
+    function putTrade(address _tokenAddress,uint64 _amount,uint128 _price,uint256 doState)external{
         require(judgeInputStableToken(_tokenAddress)==1,"Non allowed token");
         //小数点后标志位
         uint8 decimals=IERC20Metadata(_tokenAddress).decimals();
-        uint256 oneToken=10**decimals;
-        uint256 total = TimeLibrary.getTotalStable(_price,_amount,oneToken);
-        require(total>=10*oneToken);
+        uint256 total = _price*_amount;  
+        require(total>=10*(10**decimals),"less");
 
         address buyer;
         address seller;
@@ -79,7 +72,7 @@ contract TimeMarket is ITimeMarket{
         }
 
         //清算时间24h前不能挂单
-        require(block.timestamp<=getClearTime()-1 days,"Not time");
+        // require(block.timestamp<=getClearTime()-1 days,"Not time");
         
         //将代币转入该合约
         IERC20(_tokenAddress).safeTransferFrom(msg.sender,address(this),total);
@@ -89,52 +82,47 @@ contract TimeMarket is ITimeMarket{
         AaveV3Pool.supply(
             _tokenAddress,       //供应的token地址
             total,               //供应数量
-            getTimeCatpitalPool(),       //接收a token地址
+            timeCapitalPool,       //接收a token地址
             0                    //当前referralCode=0
         );
 
-        _tradeMes[id].tradeId=id;
-        _tradeMes[id].price=_price;
-        _tradeMes[id].time=uint56(block.timestamp);
-        _tradeMes[id].amount=_amount;
-        _tradeMes[id].tokenOneAmount=oneToken;
-        _tradeMes[id].usedToken=_tokenAddress;
-        _tradeMes[id].buyerAddress=buyer;
-        _tradeMes[id].sellerAddress=seller;
-        _tradeMes[id]._tradeState=newTradeState;
-
-        _userDeposite[id][msg.sender].tradeId=id;
-        _userDeposite[id][msg.sender].startTime=_tradeMes[id].time;
-        _userDeposite[id][msg.sender].endTime=0;
-        _userDeposite[id][msg.sender].depositeAmount=total;
-        _userDeposite[id][msg.sender].earnAmount=0;
-        _userDeposite[id][msg.sender].user=msg.sender;
-        
-        //总质押稳定币数量相加新的质押数量
-        totalStable+=total;
+        _tradeMes[id] = TimeLibrary.tradeMes({
+            tradeId:id,
+            time:uint32(block.timestamp),
+            amount:_amount,
+            price:_price,
+            usedToken:_tokenAddress,
+            buyerAddress:buyer,
+            sellerAddress:seller,
+            _tradeState:newTradeState
+        });
         id++;
-        require(IERC721(timeERC721).marketMint(msg.sender,id,total,doState,_tokenAddress));
+        require(ITimeCapitalPool(timeCapitalPool).marketMint(msg.sender,id-1,total,doState,_tokenAddress)==1,"Mint fail");
+        
     }
 
     //匹配订单
     function matchTrade(uint32 _id) external{
         uint256 doState;
         if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
-            doState=0;
-        }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
+            //卖出操作
             doState=1;
+            _tradeMes[_id].sellerAddress=msg.sender;
+            require(msg.sender!=_tradeMes[_id].buyerAddress);
+        }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
+            //买入操作
+            doState=0;
+            _tradeMes[_id].buyerAddress=msg.sender;
+            require(msg.sender!=_tradeMes[_id].sellerAddress);
         }else{
             revert("Non");
         }
 
-        require(msg.sender!=_tradeMes[_id].buyerAddress || msg.sender!=_tradeMes[_id].sellerAddress,"Same address");
         //清算时间24h前不能买入或卖出
-        require(block.timestamp<=getClearTime()-1 days,"Not time");
+        // require(block.timestamp<=getClearTime()-1 days,"Not time");
         TimeLibrary.tradeMes memory maxTradeMes=_tradeMes[_id];
-
         address _tokenAddress=maxTradeMes.usedToken;
-        uint256 _tokenOneAmount=maxTradeMes.tokenOneAmount;
-        uint256 total=TimeLibrary.getTotalStable(maxTradeMes.price,maxTradeMes.amount,_tokenOneAmount);
+        uint256 total=maxTradeMes.price*maxTradeMes.amount;
         //质押违约金
         IERC20(_tokenAddress).safeTransferFrom(
             msg.sender,
@@ -148,85 +136,82 @@ contract TimeMarket is ITimeMarket{
         AaveV3Pool.supply(
             _tokenAddress,       //供应的token地址
             total,               //供应数量
-            getTimeCatpitalPool(),       //接收a token地址
+            timeCapitalPool,       //接收a token地址
             0                    //当前referralCode=0
         );
-        if(maxTradeMes._tradeState==TimeLibrary.tradeState.buying){
-            _tradeMes[_id].sellerAddress=msg.sender;
-        }else if(maxTradeMes._tradeState==TimeLibrary.tradeState.selling){
-            _tradeMes[_id].buyerAddress=msg.sender;
-        }else{
-            revert("Trade error");
-        }
         
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.found;
-        _userDeposite[_id][msg.sender].tradeId=_id;
-        _userDeposite[_id][msg.sender].startTime=uint56(block.timestamp);
-        _userDeposite[_id][msg.sender].endTime=0;
-        _userDeposite[_id][msg.sender].depositeAmount=total;
-        _userDeposite[_id][msg.sender].earnAmount=0;
-        _userDeposite[_id][msg.sender].user=msg.sender;
-        totalStable+=total;
-        require(IERC721(timeERC721).marketMint(msg.sender,_id,total,doState,_tokenAddress));
+        require(ITimeCapitalPool(timeCapitalPool).marketMint(msg.sender,_id,total,doState,_tokenAddress)==1,"Mint fail");
     }
 
     //取消订单
     function cancelOrder(uint32 _id,address aToken)external{
         require(judgeInputAToken(aToken)==1,"Non allowed token");
-        require(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying ||
-        _tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling,"Invalid order");
-        require(block.timestamp<=getClearTime()-1 days,"Time closed");
-        uint256 _depositeAmount=_userDeposite[_id][msg.sender].depositeAmount;
-        uint256 userNftId=IERC721(timeERC721).getuserTradeNftId(msg.sender,_id);
-        require(_depositeAmount>0,"Not deposite");
+        uint256 state;
+        if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
+            state=0;
+        }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
+            state=1;
+        }else{
+            revert("Invalid order");
+        }
+        require(msg.sender==_tradeMes[_id].buyerAddress || msg.sender==_tradeMes[_id].sellerAddress,"Non owner");
+        // require(block.timestamp<=getClearTime()-1 days,"Time closed");
+
+        uint256 userNftId=IERC721(timeCapitalPool).getuserTradeNftId(msg.sender,_id,state);
+        //该NFT质押的数量
+        uint256 amount=IERC721(timeCapitalPool).getNftTradeIdMes(userNftId).value;
+        require(amount>0,"Not deposite");
         address usedToken=_tradeMes[_id].usedToken;
-        address timeCapitalPool=getTimeCatpitalPool();
         //从timeCapitalPool取回a token
-        ITimeCapitalPool(timeCapitalPool).approveMarket(aToken,_depositeAmount);
-        IERC20(aToken).safeTransferFrom(timeCapitalPool,address(this),_depositeAmount);
+        ITimeCapitalPool(timeCapitalPool).approveMarket(aToken,amount);
+        IERC20(aToken).safeTransferFrom(timeCapitalPool,address(this),amount);
         //授权给AaveV3Pool
-        IERC20(aToken).approve(address(AaveV3Pool),_depositeAmount);
+        IERC20(aToken).approve(address(AaveV3Pool),amount);
         //从aave v3提取供应的代币数量
         AaveV3Pool.withdraw(
             usedToken,
-            _depositeAmount,
+            amount,
             msg.sender
         );
-        _userDeposite[_id][msg.sender].depositeAmount=0;
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.inexistence;
-        require(IERC721(timeERC721).burnNft(userNftId),"Burn fail");
+        //删除该nft质押token信息
+        require(ITimeCapitalPool(timeCapitalPool).burnNft(userNftId),"Burn fail");
     }
 
     //交易未达成,退款
     function refund(uint32 _id,address aToken)external{
         require(judgeInputAToken(aToken)==1,"Non allowed token");
-        require(block.timestamp>getClearTime(),"Time has not arrived");
-        require(
-            _tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying || 
-            _tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling
-        );
-        uint256 _depositeAmount=_userDeposite[_id][msg.sender].depositeAmount;
-        uint256 userNftId=IERC721(timeERC721).getuserTradeNftId(msg.sender,_id);
+        // require(block.timestamp>getClearTime(),"Time has not arrived");
+        uint256 state;
+        if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
+            state=0;
+        }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
+            state=1;
+        }else{
+            revert("Invalid order");
+        }
+        uint256 userNftId=IERC721(timeCapitalPool).getuserTradeNftId(msg.sender,_id,state);
+        //该NFT质押的数量
+        uint256 amount=IERC721(timeCapitalPool).getNftTradeIdMes(userNftId).value;
         address _usedToken=_tradeMes[_id].usedToken;
-        address timeCapitalPool=getTimeCatpitalPool();
         //从timeCapitalPool取回a token
-        ITimeCapitalPool(timeCapitalPool).approveMarket(aToken,_depositeAmount);
-        IERC20(aToken).safeTransferFrom(timeCapitalPool,address(this),_depositeAmount);
+        ITimeCapitalPool(timeCapitalPool).approveMarket(aToken,amount);
+        IERC20(aToken).safeTransferFrom(timeCapitalPool,address(this),amount);
 
         //授权给AaveV3Pool
-        IERC20(aToken).approve(address(AaveV3Pool),_depositeAmount);
+        IERC20(aToken).approve(address(AaveV3Pool),amount);
         uint256 beforeAmount=IERC20(_usedToken).balanceOf(msg.sender);
         //从aave v3提取供应的代币数量
         AaveV3Pool.withdraw(
             _usedToken,
-            _depositeAmount,
+            amount,
             msg.sender
         );
         uint256 afterAmount=IERC20(_usedToken).balanceOf(msg.sender);
-        _userDeposite[_id][msg.sender].depositeAmount=0;
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.inexistence;
-        require(IERC721(timeERC721).burnNft(userNftId),"Burn fail");
         emit RefundEvent(_id,afterAmount-beforeAmount,msg.sender);
+        require(ITimeCapitalPool(timeCapitalPool).burnNft(userNftId),"Burn fail");
     }
 
     //交易达成,支付期权token
@@ -234,11 +219,13 @@ contract TimeMarket is ITimeMarket{
         require(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.found,"Not found");
         address seller=_tradeMes[_id].sellerAddress;
         require(msg.sender==seller,"Not the seller");
-        uint256 targetTokenAmount=_tradeMes[_id].amount;
+        uint256 amount=_tradeMes[_id].amount;
         address targetToken=getTargetToken();
+        uint8 decimals=IERC20Metadata(targetToken).decimals();
+        uint256 targetTokenAmount=amount*(10**decimals);
         IERC20(targetToken).safeTransferFrom(msg.sender,address(this),targetTokenAmount);
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.done;
-        require(IERC721(timeERC721).marketMint(msg.sender,_id,targetTokenAmount,2,targetToken));
+        require(ITimeCapitalPool(timeCapitalPool).marketMint(msg.sender,_id,targetTokenAmount,2,targetToken)==1,"Mint fail");
     }
 
     //判断传入token是否允许
@@ -263,13 +250,6 @@ contract TimeMarket is ITimeMarket{
         return _tradeMes[_id].sellerAddress;
     }
 
-    //得到奖励池地址
-    function getTimeCatpitalPool()private view returns(address){
-        address capitalPool=ITimeCapitalPoolFactory(timeCapitalPoolFactory).getCapitalPool(thisMarketId);
-        require(capitalPool!=address(0),"ZeroAddress");
-        return capitalPool;
-    }
-
     //返回当前清算时间
     function getClearTime()private view returns(uint256){
        return ITimeGovern(timeGovern).getClearingTime(thisMarketId);
@@ -285,9 +265,9 @@ contract TimeMarket is ITimeMarket{
         return _tradeMes[_id];
     }
 
-    //得到用户deposite
-    function getUserDeposite(uint32 _id,address userAddress)external view returns(TimeLibrary.userDeposite memory){
-        return _userDeposite[_id][userAddress];
+    //最新的订单id
+    function getLastId()external view returns(uint256){
+        return id;
     }
 
 }

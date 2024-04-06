@@ -15,7 +15,10 @@ contract TimeGovern is Ownable{
 
     mapping(uint256=>TimeLibrary.clearingMes)private _clearingMes;
 
-
+    //usdc:0x52D800ca262522580CeBAD275395ca6e7598C014
+    //usdt:0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2
+    //ausdc:0x4086fabeE92a080002eeBA1220B9025a27a40A49
+    //ausdt:0x5F3a71D07E95C1E54B9Cc055D418a219586A3473
     function setAllowToken(address[] calldata _allowedAToken,address[] calldata _allowedStableToken)external onlyOwner{
         allowedAToken=_allowedAToken;
         allowedStableToken=_allowedStableToken;

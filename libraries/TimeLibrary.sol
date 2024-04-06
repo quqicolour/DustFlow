@@ -14,23 +14,13 @@ library TimeLibrary{
     //struct
     struct tradeMes{
         uint32 tradeId;
-        uint32 price;       //buyPrice/1000=当前价格
-        uint56 time;        //购买时的时间
-        uint128 amount; //预期空投代币数量
-        uint256 tokenOneAmount;  //1单位数量
+        uint32 time;        //购买时的时间
+        uint64 amount; //预期空投代币数量
+        uint128 price;       //buyPrice
         address usedToken;  //交易采用的token
         address buyerAddress;
         address sellerAddress;
         tradeState _tradeState;
-    }
-
-    struct userDeposite{
-        uint32 tradeId;
-        uint56 startTime;
-        uint56 endTime;
-        uint256 depositeAmount;
-        uint256 earnAmount;
-        address user;
     }
 
     //清算相关信息
@@ -72,16 +62,17 @@ library TimeLibrary{
         }
     }
 
-    //计算总质押稳定币数量
-    function getTotalStable(uint32 _soldPrice, uint128 _soldAmount,uint256 _tokenOneAmount)internal pure returns(uint256){
-        return _soldAmount*_soldPrice/1000*_tokenOneAmount;
-    }
-
     function judgeInputToken(address inputToken,address[] memory allowedTokens)internal pure returns(uint256 state){
         for(uint256 i;i<allowedTokens.length;i++){
             if(inputToken==allowedTokens[i]){
                 state = 1;
             }
         }
+    }
+
+    function getTargetTokenAmount(uint256 amount,uint8 decimals1,uint8 decimals2)internal pure returns(uint256){
+        require(amount>0,"Zero");
+        uint256 aTokenAmount=amount/(10**decimals1)*(10**decimals2);
+        return aTokenAmount;
     }
 }
