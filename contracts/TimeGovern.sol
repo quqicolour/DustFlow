@@ -8,12 +8,14 @@ contract TimeGovern is Ownable{
 
     address private timeMarketFactory;
 
-    address private feeAddress;
+    address private feeAddress=0xaE67336f06B10fbbb26F31d31AbEA897290109B9;
 
     address[] private allowedAToken;
     address[] private allowedStableToken;
 
     mapping(uint256=>TimeLibrary.clearingMes)private _clearingMes;
+
+    event changeFee(address oldFeeAddress,address newFeeAddress,uint256 time);
 
     //usdc:0x52D800ca262522580CeBAD275395ca6e7598C014
     //usdt:0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2
@@ -30,6 +32,12 @@ contract TimeGovern is Ownable{
         _clearingMes[_marketId]._marketId=_marketId;
         _clearingMes[_marketId]._clearingTime=time;
         _clearingMes[_marketId]._tokenAddress=token;
+    }
+
+    function changeFeeAddress(address newFeeAddress)external onlyOwner{
+        address oldFeeAddress=feeAddress;
+        feeAddress=newFeeAddress;
+        emit changeFee(oldFeeAddress,newFeeAddress,block.timestamp);
     }
 
     function getAllowedATokens()external view returns(address[] memory){
@@ -52,6 +60,11 @@ contract TimeGovern is Ownable{
     function getClearingTime(uint256 _marketId)external view returns(uint256){
         uint256 clearingTime=_clearingMes[_marketId]._clearingTime;
         return clearingTime;
+    }
+
+    function getFeeAddress()external view returns(address){
+        require(feeAddress!=address(0),"Zero Fee Address");
+        return feeAddress;
     }
     
 }

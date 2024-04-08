@@ -31,34 +31,21 @@ library TimeLibrary{
     }
 
     /*
-        *  100 ether<=amount<1000 ether, 1%
+        *  10 ether<=amount<1000 ether, 1%
         *  1000 ether<=amount<10000 ether,0.8%
         *  amount>10000 ether,0.5%
         * other error
     */
-    function fee(uint256 _tokenOneAmount,uint256 stableAmount)internal pure returns(uint256 stableFee){
-        if(stableAmount>=100*_tokenOneAmount && stableAmount<1000*_tokenOneAmount){
-            return stableAmount/100;
+    function fee(uint8 decimals,uint256 stableAmount)internal pure returns(uint256 stableFee){
+        uint256 _tokenOneAmount=10**decimals;
+        if(stableAmount>=10*_tokenOneAmount && stableAmount<1000*_tokenOneAmount){
+            return stableAmount/100;  //1%
         }else if(stableAmount>=1000*_tokenOneAmount && stableAmount<10000*_tokenOneAmount){
-            return stableAmount/125;
+            return stableAmount/125;  //0.8%
         }else if(stableAmount>=10000*_tokenOneAmount){
-            return stableAmount/200;
+            return stableAmount/200;  //0.5%
         }else{
-            return 0;
-        }
-    }
-
-    //计算出售者需要质押的违约金(稳定币)
-    function getPenal(uint32 _soldPrice, uint128 _soldAmount,uint256 _tokenOneAmount)internal pure returns (uint256){
-        uint256 thisAmount = (_soldPrice*_tokenOneAmount)/1000*_soldAmount;
-        if (thisAmount >= 100*_tokenOneAmount && thisAmount < 1000*_tokenOneAmount) {
-            return (thisAmount * 50) / 100;
-        } else if (thisAmount >= 1000*_tokenOneAmount && thisAmount < 10000*_tokenOneAmount) {
-            return (thisAmount * 40) / 100;
-        } else if (thisAmount > 10000*_tokenOneAmount) {
-            return (thisAmount * 25) / 100;
-        } else {
-            revert("NotEnoughAmount");
+            revert("Inexistence");
         }
     }
 

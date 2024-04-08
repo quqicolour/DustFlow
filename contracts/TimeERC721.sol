@@ -37,7 +37,7 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
     mapping(uint256 => address) private _tokenApprovals;
 
     //记录购买订单对应的NFT ID
-    mapping(uint256=>uint256) private buyTradeIdToNftId;
+    mapping(uint256=>uint256) private firstTradeIdToNftId;
 
     //记录用户对应订单的nft id
     mapping(address=>mapping(uint256=>mapping(uint256=>uint256)))private userTradeNftId;
@@ -48,7 +48,7 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
     mapping(uint256=>nftTradeIdMes)private _nftTradeIdMes;
 
     modifier onlyMarket{
-        require(msg.sender==timeMarket,"Non market");
+        require(msg.sender==timeMarket);
         _;
     }
 
@@ -191,10 +191,11 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
         address thisReceiver;
         _mint(receiver,id);
         if(state==0){
-            buyTradeIdToNftId[tradeId]=id;
+            firstTradeIdToNftId[tradeId]=id;
         }
+
         if(state==2){
-            uint256 nftId=buyTradeIdToNftId[tradeId];
+            uint256 nftId=firstTradeIdToNftId[tradeId];
             thisReceiver=_ownerOf(nftId);
         }else{
             thisReceiver=receiver;

@@ -68,7 +68,7 @@ contract TimeMarket is ITimeMarket{
             newTradeState=TimeLibrary.tradeState.selling;
             seller=msg.sender;
         }else{
-            revert("Non");
+            revert("Invalid order");
         }
 
         //清算时间24h前不能挂单
@@ -103,19 +103,17 @@ contract TimeMarket is ITimeMarket{
 
     //匹配订单
     function matchTrade(uint32 _id) external{
-        uint256 doState;
+        uint256 state;
         if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
-            //卖出操作
-            doState=1;
+            state=1;
             _tradeMes[_id].sellerAddress=msg.sender;
             require(msg.sender!=_tradeMes[_id].buyerAddress);
         }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
-            //买入操作
-            doState=0;
+            state=0;
             _tradeMes[_id].buyerAddress=msg.sender;
             require(msg.sender!=_tradeMes[_id].sellerAddress);
         }else{
-            revert("Non");
+            revert("Invalid order");
         }
 
         //清算时间24h前不能买入或卖出
@@ -141,13 +139,13 @@ contract TimeMarket is ITimeMarket{
         );
         
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.found;
-        require(ITimeCapitalPool(timeCapitalPool).marketMint(msg.sender,_id,total,doState,_tokenAddress)==1,"Mint fail");
+        require(ITimeCapitalPool(timeCapitalPool).marketMint(msg.sender,_id,total,state,_tokenAddress)==1,"Mint fail");
     }
 
     //取消订单
     function cancelOrder(uint32 _id,address aToken)external{
-        require(judgeInputAToken(aToken)==1,"Non allowed token");
         uint256 state;
+        require(judgeInputAToken(aToken)==1,"Non allowed token");
         if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
             state=0;
         }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
@@ -155,10 +153,10 @@ contract TimeMarket is ITimeMarket{
         }else{
             revert("Invalid order");
         }
-        require(msg.sender==_tradeMes[_id].buyerAddress || msg.sender==_tradeMes[_id].sellerAddress,"Non owner");
         // require(block.timestamp<=getClearTime()-1 days,"Time closed");
 
         uint256 userNftId=IERC721(timeCapitalPool).getuserTradeNftId(msg.sender,_id,state);
+        require(IERC721(timeCapitalPool).ownerOf(userNftId)==msg.sender);
         //该NFT质押的数量
         uint256 amount=IERC721(timeCapitalPool).getNftTradeIdMes(userNftId).value;
         require(amount>0,"Not deposite");
@@ -181,9 +179,9 @@ contract TimeMarket is ITimeMarket{
 
     //交易未达成,退款
     function refund(uint32 _id,address aToken)external{
+        uint256 state;
         require(judgeInputAToken(aToken)==1,"Non allowed token");
         // require(block.timestamp>getClearTime(),"Time has not arrived");
-        uint256 state;
         if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
             state=0;
         }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
@@ -192,6 +190,7 @@ contract TimeMarket is ITimeMarket{
             revert("Invalid order");
         }
         uint256 userNftId=IERC721(timeCapitalPool).getuserTradeNftId(msg.sender,_id,state);
+        require(IERC721(timeCapitalPool).ownerOf(userNftId)==msg.sender);
         //该NFT质押的数量
         uint256 amount=IERC721(timeCapitalPool).getNftTradeIdMes(userNftId).value;
         address _usedToken=_tradeMes[_id].usedToken;

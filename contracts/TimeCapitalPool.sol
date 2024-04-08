@@ -29,9 +29,9 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
 
     //交易成功,买家提取期权token
     function buyerWithdrawShareOption(uint32 _id)external{
-        uint256 nftId=getuserTradeNftId(msg.sender,_id,2);
+        uint256 nftId=getuserTradeNftId(msg.sender,_id,3);
         address thisNftOwner=ownerOf(nftId);
-        require(msg.sender==thisNftOwner,"Non owner");
+        require(msg.sender==thisNftOwner);
         TimeLibrary.tradeState newTradeState=getTradeMes(_id)._tradeState;
         require(newTradeState==TimeLibrary.tradeState.done,"Invalid order");
         // require(block.timestamp>getClearTime(),"Time has not arrived");
@@ -40,8 +40,10 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
         uint256 amount=getTradeMes(_id).amount;
         uint8 decimals=IERC20Metadata(targetToken).decimals();
         uint256 targetTokenAmount=amount*(10**decimals);
+        uint256 fee=TimeLibrary.fee(decimals,targetTokenAmount);
         require(targetTokenAmount>0);
-        IERC20(targetToken).safeTransfer(thisNftOwner,targetTokenAmount);
+        IERC20(targetToken).safeTransfer(thisNftOwner,targetTokenAmount-fee);
+        IERC20(targetToken).safeTransfer(getFeeAddress(),fee);
         require(_burnNft(nftId),"Burn fail");
     }
 
@@ -50,11 +52,12 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
         require(judgeInputAToken(aToken)==1);
         uint256 nftId=getuserTradeNftId(msg.sender,_id,1);
         address thisNftOwner=ownerOf(nftId);
-        require(msg.sender==thisNftOwner,"Non owner");
+        require(msg.sender==thisNftOwner);
         // require(block.timestamp>getClearTime(),"Time has not arrived");
         TimeLibrary.tradeState newTradeState=getTradeMes(_id)._tradeState;
         require(newTradeState==TimeLibrary.tradeState.done,"Invalid order");
-        uint256 amount=getNftTradeIdValue(nftId);
+        //卖家质押的违约金+对手方money
+        uint256 amount=getNftTradeIdValue(nftId)*2;
         address usedToken=getTradeMes(_id).usedToken;
         uint8 decimals1=IERC20Metadata(usedToken).decimals();
         uint8 decimals2=IERC20Metadata(aToken).decimals();
@@ -66,21 +69,24 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
             aTokenAmount,
             address(this)
         );
-        require(getThisBalance(usedToken)>=amount,"Balance error");
-        IERC20(usedToken).safeTransfer(thisNftOwner,amount);
+        require(getThisBalance(usedToken)>=amount);
+        uint256 fee=TimeLibrary.fee(decimals1,amount);
+        IERC20(usedToken).safeTransfer(thisNftOwner,amount-fee);
+        IERC20(usedToken).safeTransfer(getFeeAddress(),fee);
         require(_burnNft(nftId),"Burn fail");
     }
 
-    //交易违约,买家提取卖家支付的违约金
+    //交易违约,买家提取卖家支付的违约金以及自身质押的token
     function buyerWithdrawDedit(uint32 _id,address aToken)external{
         require(judgeInputAToken(aToken)==1);
         uint256 nftId=getuserTradeNftId(msg.sender,_id,0);
         address thisNftOwner=ownerOf(nftId);
-        require(msg.sender==thisNftOwner,"Non owner");
+        require(msg.sender==thisNftOwner);
         // require(block.timestamp>getClearTime(),"Time has not arrived");
         TimeLibrary.tradeState newTradeState=getTradeMes(_id)._tradeState;
         require(newTradeState==TimeLibrary.tradeState.found,"Invalid order");
-        uint256 amount=getNftTradeIdValue(nftId);
+        //退还个人存的以及卖家的违约金
+        uint256 amount=getNftTradeIdValue(nftId)*2;
         address usedToken=getTradeMes(_id).usedToken;
         uint8 decimals1=IERC20Metadata(usedToken).decimals();
         uint8 decimals2=IERC20Metadata(aToken).decimals();
@@ -92,8 +98,10 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
             aTokenAmount,
             address(this)
         );
-        require(getThisBalance(usedToken)>=amount,"Balance error");
-        IERC20(usedToken).safeTransfer(thisNftOwner,amount);
+        require(getThisBalance(usedToken)>=amount);
+        uint256 fee=TimeLibrary.fee(decimals1,amount);
+        IERC20(usedToken).safeTransfer(thisNftOwner,amount-fee);
+        IERC20(usedToken).safeTransfer(getFeeAddress(),fee);
         require(_burnNft(nftId),"Burn fail");
     }
 
@@ -123,6 +131,12 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
     function getTargetToken()private view returns(address){
         address targetToken=ITimeGovern(timeGovern).getTargetToken(thisMarketId);
         return targetToken;
+    }
+
+    //得到费用地址
+    function getFeeAddress()private view returns(address){
+        address feeAddress=ITimeGovern(timeGovern).getFeeAddress();
+        return feeAddress;
     }
 
 
