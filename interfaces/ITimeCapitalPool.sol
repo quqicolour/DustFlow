@@ -3,8 +3,6 @@ pragma solidity ^0.8.9;
 import "../interfaces/IERC721.sol";
 interface ITimeCapitalPool is IERC721{
 
-    error NonOwner();
-
     struct withdrawMes{
         uint32 tradeId;
         uint256 amount;

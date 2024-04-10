@@ -19,8 +19,6 @@ interface IERC721 is IERC165 {
         address token;
     }
 
-    error FailUpdata();
-
     /**
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
      */
@@ -37,8 +35,6 @@ interface IERC721 is IERC165 {
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
     event MintValue(address indexed sender,uint256 indexed tokenId,uint256 amount);
-
-    event Burn(uint256 indexed tokenId);
 
     /**
      * @dev Returns the number of tokens in ``owner``'s account.
@@ -133,13 +129,11 @@ interface IERC721 is IERC165 {
      */
     function setApprovalForAll(address operator, bool approved) external;
 
-    function marketMint(address receiver,uint32 tradeId,uint256 value,uint256 state,address token)external returns(uint256);
+    function marketMint(address receiver,uint256 marketId,uint32 tradeId,uint256 value,uint256 state,address token)external returns(uint256);
     //burn nft
     function burnNft(uint256 tokenId) external returns(bool);
 
     function getNftTradeIdValue(uint256 tokenId)external view returns(uint256);
-
-    function getuserTradeNftId(address userAddress,uint256 tradeId,uint256 state)external view returns(uint256);
 
     function getNftTradeIdMes(uint256 tokenId)external view returns(nftTradeIdMes memory);
 

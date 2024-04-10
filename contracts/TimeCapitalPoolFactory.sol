@@ -14,7 +14,7 @@ contract TimeCapitalPoolFactory{
             new TimeCapitalPool{salt: keccak256(abi.encodePacked(
                 _marketId,
                 _marketAddress
-            ))}()
+            ))}(_marketId)
         );
         //记录所有已创建的合约
         idToCapitalPool[_marketId]=hat;

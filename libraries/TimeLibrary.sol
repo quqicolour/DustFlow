@@ -15,11 +15,12 @@ library TimeLibrary{
     struct tradeMes{
         uint32 tradeId;
         uint32 time;        //购买时的时间
-        uint64 amount; //预期空投代币数量
+        uint64 amount;      //目标代币数量
         uint128 price;       //buyPrice
         address usedToken;  //交易采用的token
-        address buyerAddress;
-        address sellerAddress;
+        uint256 buyerNftId;  //购买者的nftId
+        uint256 sellerNftId;  //出售者的nftId
+        uint256 injectNftId;  //放入目标的nftId
         tradeState _tradeState;
     }
 

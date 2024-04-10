@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "../interfaces/IERC721.sol";
 import "../interfaces/IERC721Receiver.sol";
 import "../interfaces/IERC721Metadata.sol";
+import "../interfaces/IStorage.sol";
 import "../libraries/Address.sol";
 import "../libraries/Strings.sol";
 import "./ERC165.sol";
@@ -26,6 +27,7 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
 
     address public timeMarket;
     address public timeGovern;
+    address private storageUriAddress;
 
     // Mapping from token ID to owner address
     mapping(uint256 => address) private _owners;
@@ -35,9 +37,6 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
 
     // Mapping from token ID to approved address
     mapping(uint256 => address) private _tokenApprovals;
-
-    //记录购买订单对应的NFT ID
-    mapping(uint256=>uint256) private firstTradeIdToNftId;
 
     //记录用户对应订单的nft id
     mapping(address=>mapping(uint256=>mapping(uint256=>uint256)))private userTradeNftId;
@@ -62,12 +61,13 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
             super.supportsInterface(interfaceId);
     }
 
-    function initialize(string memory _name,string memory _symbol,address _timeMarket,address _timeGovern)external{
+    function initialize(string memory _name,string memory _symbol,address _timeMarket,address _timeGovern,address _storageUriAddress)external{
         require(initState==false);
         thisName = _name;
         thisSymbol = _symbol;
         timeMarket=_timeMarket;
         timeGovern=_timeGovern;
+        storageUriAddress=_storageUriAddress;
         initState=true;
     }
 
@@ -107,9 +107,8 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireMinted(tokenId);
-
-        string memory baseURI = _baseURI();
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
+        string memory tokenUri=IStorage(storageUriAddress).getTokenUri(address(this),tokenId);
+        return tokenUri;
     }
 
     /**
@@ -165,7 +164,6 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
     function transferFrom(address from, address to, uint256 tokenId) public override {
         //solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(_msgSender(), tokenId), "Non caller");
-        if(_updataTradeNftId(from,to,tokenId)==false){revert FailUpdata();}
         _transfer(from, to, tokenId);
     }
 
@@ -173,7 +171,6 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
      * @dev See {IERC721-safeTransferFrom}.
      */
     function safeTransferFrom(address from, address to, uint256 tokenId) public override {
-        if(_updataTradeNftId(from,to,tokenId)==false){revert FailUpdata();}
         safeTransferFrom(from, to, tokenId, "");
     }
 
@@ -182,36 +179,24 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
      */
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "Non caller");
-        if(_updataTradeNftId(from,to,tokenId)==false){revert FailUpdata();}
         _safeTransfer(from, to, tokenId, data);
     }
 
     //market mint
-    function marketMint(address receiver,uint32 tradeId,uint256 value,uint256 state,address token)external onlyMarket returns(uint256){
-        address thisReceiver;
-        _mint(receiver,id);
-        if(state==0){
-            firstTradeIdToNftId[tradeId]=id;
-        }
-
-        if(state==2){
-            uint256 nftId=firstTradeIdToNftId[tradeId];
-            thisReceiver=_ownerOf(nftId);
-        }else{
-            thisReceiver=receiver;
-        }
-        userTradeNftId[thisReceiver][tradeId][state]=id;
+    function marketMint(address receiver,uint256 marketId,uint32 tradeId,uint256 value,uint256 state,address token)external onlyMarket returns(uint256){
+        uint256 thisNftId=id;
+        _mint(receiver,thisNftId);
+        IStorage(storageUriAddress).storageImage(marketId,tradeId,thisNftId,value,state,token);
         _nftTradeIdMes[id]=nftTradeIdMes({
             tradeId:tradeId,
             startTime:uint32(block.timestamp),
-            nftId:id,
+            nftId:thisNftId,
             state:state,
             value:value,
             token:token
         });
-        emit MintValue(receiver,id,value);
         id++;
-        return 1;
+        return thisNftId;
     }
 
     //burn nft
@@ -222,10 +207,6 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
 
     function getNftTradeIdValue(uint256 tokenId)public view returns(uint256){
         return _nftTradeIdMes[tokenId].value;
-    }
-
-    function getuserTradeNftId(address userAddress,uint256 tradeId,uint256 state)public view returns(uint256){
-        return userTradeNftId[userAddress][tradeId][state];
     }
 
     function getNftTradeIdMes(uint256 tokenId)external view returns(nftTradeIdMes memory){
@@ -258,15 +239,6 @@ contract TimeERC721 is Context, ERC165, IERC721, IERC721Metadata, Ownable{
     function _burnNft(uint256 tokenId) internal returns(bool){
         _burn(tokenId);
         delete _nftTradeIdMes[tokenId];
-        emit Burn(tokenId);
-        return true;
-    }
-
-    function _updataTradeNftId(address from, address to, uint256 tokenId)internal returns(bool){
-        uint256 tradeId=_nftTradeIdMes[id].tradeId;
-        uint256 state=_nftTradeIdMes[tokenId].state;
-        userTradeNftId[to][tradeId][state]=tokenId;
-        delete userTradeNftId[from][tradeId][state];
         return true;
     }
 

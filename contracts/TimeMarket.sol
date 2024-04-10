@@ -38,15 +38,13 @@ contract TimeMarket is ITimeMarket{
     //记录用户的流动性数量
     mapping(address=>mapping(uint64=>uint)) private userLiquidity;
 
-    function initialize(address _timeCapitalPool,address _timeGovern)external{
+    //aaveV3=IPool(0xcC6114B983E4Ed2737E9BD3961c9924e6216c704)
+    function initialize(address _timeCapitalPool,address _timeGovern,address _pool)external{
         require(initState==false,"Already init");
         timeCapitalPool=_timeCapitalPool;
         timeGovern=_timeGovern;
-        initState=true;
-    }
-
-    function changeAaveV3Pool(address _pool)external{
         AaveV3Pool=IPool(_pool);
+        initState=true;
     }
 
     //挂单(买卖)
@@ -57,16 +55,11 @@ contract TimeMarket is ITimeMarket{
         uint256 total = _price*_amount;  
         require(total>=10*(10**decimals),"less");
 
-        address buyer;
-        address seller;
-
         TimeLibrary.tradeState newTradeState;
         if(doState==0){
-            buyer=msg.sender;
             newTradeState=TimeLibrary.tradeState.buying;
         }else if(doState==1){
             newTradeState=TimeLibrary.tradeState.selling;
-            seller=msg.sender;
         }else{
             revert("Invalid order");
         }
@@ -86,18 +79,20 @@ contract TimeMarket is ITimeMarket{
             0                    //当前referralCode=0
         );
 
+        uint256 thisNftId=mintNft(msg.sender,id,total,doState,_tokenAddress);
+
         _tradeMes[id] = TimeLibrary.tradeMes({
             tradeId:id,
             time:uint32(block.timestamp),
             amount:_amount,
             price:_price,
             usedToken:_tokenAddress,
-            buyerAddress:buyer,
-            sellerAddress:seller,
+            buyerNftId:doState==0?thisNftId:0,
+            sellerNftId:doState==1?thisNftId:0,
+            injectNftId:0,
             _tradeState:newTradeState
         });
         id++;
-        require(ITimeCapitalPool(timeCapitalPool).marketMint(msg.sender,id-1,total,doState,_tokenAddress)==1,"Mint fail");
         
     }
 
@@ -105,13 +100,9 @@ contract TimeMarket is ITimeMarket{
     function matchTrade(uint32 _id) external{
         uint256 state;
         if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
-            state=1;
-            _tradeMes[_id].sellerAddress=msg.sender;
-            require(msg.sender!=_tradeMes[_id].buyerAddress);
-        }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
             state=0;
-            _tradeMes[_id].buyerAddress=msg.sender;
-            require(msg.sender!=_tradeMes[_id].sellerAddress);
+        }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
+            state=1;
         }else{
             revert("Invalid order");
         }
@@ -137,28 +128,33 @@ contract TimeMarket is ITimeMarket{
             timeCapitalPool,       //接收a token地址
             0                    //当前referralCode=0
         );
-        
+
+        uint256 thisNftId=mintNft(msg.sender,_id,total,state,_tokenAddress);
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.found;
-        require(ITimeCapitalPool(timeCapitalPool).marketMint(msg.sender,_id,total,state,_tokenAddress)==1,"Mint fail");
+        if(state==0){
+            _tradeMes[_id].sellerNftId=thisNftId;
+        }else if(state==1){
+            _tradeMes[_id].buyerNftId=thisNftId;
+        }else{
+            revert("Invalid order");
+        }
     }
 
     //取消订单
     function cancelOrder(uint32 _id,address aToken)external{
-        uint256 state;
+        uint256 _nftId;
         require(judgeInputAToken(aToken)==1,"Non allowed token");
         if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
-            state=0;
+            _nftId==_tradeMes[_id].buyerNftId;
         }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
-            state=1;
+            _nftId==_tradeMes[_id].sellerNftId;
         }else{
             revert("Invalid order");
         }
+        require(getNftOwner(_nftId)==msg.sender,"Non owner");
         // require(block.timestamp<=getClearTime()-1 days,"Time closed");
-
-        uint256 userNftId=IERC721(timeCapitalPool).getuserTradeNftId(msg.sender,_id,state);
-        require(IERC721(timeCapitalPool).ownerOf(userNftId)==msg.sender);
         //该NFT质押的数量
-        uint256 amount=IERC721(timeCapitalPool).getNftTradeIdMes(userNftId).value;
+        uint256 amount=IERC721(timeCapitalPool).getNftTradeIdMes(_nftId).value;
         require(amount>0,"Not deposite");
         address usedToken=_tradeMes[_id].usedToken;
         //从timeCapitalPool取回a token
@@ -174,25 +170,24 @@ contract TimeMarket is ITimeMarket{
         );
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.inexistence;
         //删除该nft质押token信息
-        require(ITimeCapitalPool(timeCapitalPool).burnNft(userNftId),"Burn fail");
+        require(ITimeCapitalPool(timeCapitalPool).burnNft(_nftId),"Burn fail");
     }
 
     //交易未达成,退款
     function refund(uint32 _id,address aToken)external{
-        uint256 state;
+        uint256 _nftId;
         require(judgeInputAToken(aToken)==1,"Non allowed token");
         // require(block.timestamp>getClearTime(),"Time has not arrived");
         if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
-            state=0;
+            _nftId==_tradeMes[_id].buyerNftId;
         }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
-            state=1;
+            _nftId==_tradeMes[_id].sellerNftId;
         }else{
             revert("Invalid order");
         }
-        uint256 userNftId=IERC721(timeCapitalPool).getuserTradeNftId(msg.sender,_id,state);
-        require(IERC721(timeCapitalPool).ownerOf(userNftId)==msg.sender);
+        require(getNftOwner(_nftId)==msg.sender,"Non owner");
         //该NFT质押的数量
-        uint256 amount=IERC721(timeCapitalPool).getNftTradeIdMes(userNftId).value;
+        uint256 amount=IERC721(timeCapitalPool).getNftTradeIdMes(_nftId).value;
         address _usedToken=_tradeMes[_id].usedToken;
         //从timeCapitalPool取回a token
         ITimeCapitalPool(timeCapitalPool).approveMarket(aToken,amount);
@@ -210,21 +205,30 @@ contract TimeMarket is ITimeMarket{
         uint256 afterAmount=IERC20(_usedToken).balanceOf(msg.sender);
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.inexistence;
         emit RefundEvent(_id,afterAmount-beforeAmount,msg.sender);
-        require(ITimeCapitalPool(timeCapitalPool).burnNft(userNftId),"Burn fail");
+        require(ITimeCapitalPool(timeCapitalPool).burnNft(_nftId),"Burn fail");
     }
 
     //交易达成,支付期权token
     function deposite(uint32 _id)external{
         require(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.found,"Not found");
-        address seller=_tradeMes[_id].sellerAddress;
-        require(msg.sender==seller,"Not the seller");
+        uint256 buyerNftId=_tradeMes[_id].buyerNftId;
+        uint256 sellerNftId=_tradeMes[_id].sellerNftId;
+        address buyer=getNftOwner(buyerNftId);
+        require(getNftOwner(sellerNftId)==msg.sender,"Non seller");
         uint256 amount=_tradeMes[_id].amount;
         address targetToken=getTargetToken();
         uint8 decimals=IERC20Metadata(targetToken).decimals();
         uint256 targetTokenAmount=amount*(10**decimals);
         IERC20(targetToken).safeTransferFrom(msg.sender,address(this),targetTokenAmount);
+        uint256 nftId=mintNft(buyer,_id,targetTokenAmount,2,targetToken);
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.done;
-        require(ITimeCapitalPool(timeCapitalPool).marketMint(msg.sender,_id,targetTokenAmount,2,targetToken)==1,"Mint fail");
+        _tradeMes[_id].injectNftId=nftId;
+    }
+
+    //铸造nft
+    function mintNft(address receiver,uint32 tradeId,uint256 value,uint256 state,address token)private returns(uint256){
+        uint256 thisNftId=ITimeCapitalPool(timeCapitalPool).marketMint(receiver,thisMarketId,tradeId,value,state,token);
+        return thisNftId;
     }
 
     //判断传入token是否允许
@@ -239,14 +243,9 @@ contract TimeMarket is ITimeMarket{
         state=TimeLibrary.judgeInputToken(inputAToken,allowedATokens);
     }
 
-    //根据交易id获取到购买者
-    function getBuyer(uint32 _id)private view returns(address){
-        return _tradeMes[_id].buyerAddress;
-    }
-
-    //根据交易id获取到出售者
-    function getSeller(uint32 _id)private view returns(address){
-        return _tradeMes[_id].sellerAddress;
+    //得到nft所有者
+    function getNftOwner(uint256 _nftId)private view returns(address){
+        return ITimeCapitalPool(timeCapitalPool).ownerOf(_nftId);
     }
 
     //返回当前清算时间
