@@ -17,10 +17,17 @@ contract TimeGovern is Ownable{
 
     event changeFee(address oldFeeAddress,address newFeeAddress,uint256 time);
 
+    //mumbai:
     //usdc:0x52D800ca262522580CeBAD275395ca6e7598C014
     //usdt:0x1fdE0eCc619726f4cD597887C9F3b4c8740e19e2
     //ausdc:0x4086fabeE92a080002eeBA1220B9025a27a40A49
     //ausdt:0x5F3a71D07E95C1E54B9Cc055D418a219586A3473
+
+    //sepolia:
+    //usdc:0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8
+    //usdt:0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0
+    //ausdc:0x16dA4541aD1807f4443d92D26044C1147406EB80
+    //ausdt:0xAF0F6e8b0Dc5c913bbF4d14c22B4E78Dd14310B6
     function setAllowToken(address[] calldata _allowedAToken,address[] calldata _allowedStableToken)external onlyOwner{
         allowedAToken=_allowedAToken;
         allowedStableToken=_allowedStableToken;

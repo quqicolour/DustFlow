@@ -23,11 +23,10 @@ contract TimeMarket is ITimeMarket{
     address private timeCapitalPool;
     address private timeGovern;
 
-    // address private AUSDT=0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0;   //aave usdt=0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0
-    // address private AEthUsdt=0xAF0F6e8b0Dc5c913bbF4d14c22B4E78Dd14310B6;
-
     //AAVE V3 (sepolia)
-    IPool private AaveV3Pool=IPool(0xcC6114B983E4Ed2737E9BD3961c9924e6216c704);
+    //sepolia:0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951
+    //mumbai:0xcC6114B983E4Ed2737E9BD3961c9924e6216c704
+    IPool private AaveV3Pool=IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);
 
     constructor(uint256 _thisMarketId){
         thisMarketId=_thisMarketId;
@@ -38,7 +37,6 @@ contract TimeMarket is ITimeMarket{
     //记录用户的流动性数量
     mapping(address=>mapping(uint64=>uint)) private userLiquidity;
 
-    //aaveV3=IPool(0xcC6114B983E4Ed2737E9BD3961c9924e6216c704)
     function initialize(address _timeCapitalPool,address _timeGovern,address _pool)external{
         require(initState==false,"Already init");
         timeCapitalPool=_timeCapitalPool;
@@ -64,8 +62,8 @@ contract TimeMarket is ITimeMarket{
             revert("Invalid order");
         }
 
-        //清算时间24h前不能挂单
-        // require(block.timestamp<=getClearTime()-1 days,"Not time");
+        //清算时间12h前不能挂单
+        require(block.timestamp<getClearTime()-12 hours,"Not time");
         
         //将代币转入该合约
         IERC20(_tokenAddress).safeTransferFrom(msg.sender,address(this),total);
@@ -108,7 +106,7 @@ contract TimeMarket is ITimeMarket{
         }
 
         //清算时间24h前不能买入或卖出
-        // require(block.timestamp<=getClearTime()-1 days,"Not time");
+        require(block.timestamp<getClearTime()-12 hours,"Not time");
         TimeLibrary.tradeMes memory maxTradeMes=_tradeMes[_id];
         address _tokenAddress=maxTradeMes.usedToken;
         uint256 total=maxTradeMes.price*maxTradeMes.amount;
@@ -145,14 +143,14 @@ contract TimeMarket is ITimeMarket{
         uint256 _nftId;
         require(judgeInputAToken(aToken)==1,"Non allowed token");
         if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
-            _nftId==_tradeMes[_id].buyerNftId;
+            _nftId=_tradeMes[_id].buyerNftId;
         }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
-            _nftId==_tradeMes[_id].sellerNftId;
+            _nftId=_tradeMes[_id].sellerNftId;
         }else{
             revert("Invalid order");
         }
         require(getNftOwner(_nftId)==msg.sender,"Non owner");
-        // require(block.timestamp<=getClearTime()-1 days,"Time closed");
+        require(block.timestamp<getClearTime()-12 hours,"Time closed");
         //该NFT质押的数量
         uint256 amount=IERC721(timeCapitalPool).getNftTradeIdMes(_nftId).value;
         require(amount>0,"Not deposite");
@@ -177,11 +175,11 @@ contract TimeMarket is ITimeMarket{
     function refund(uint32 _id,address aToken)external{
         uint256 _nftId;
         require(judgeInputAToken(aToken)==1,"Non allowed token");
-        // require(block.timestamp>getClearTime(),"Time has not arrived");
+        require(block.timestamp>getClearTime(),"Time has not arrived");
         if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.buying){
-            _nftId==_tradeMes[_id].buyerNftId;
+            _nftId=_tradeMes[_id].buyerNftId;
         }else if(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.selling){
-            _nftId==_tradeMes[_id].sellerNftId;
+            _nftId=_tradeMes[_id].sellerNftId;
         }else{
             revert("Invalid order");
         }
@@ -211,6 +209,7 @@ contract TimeMarket is ITimeMarket{
     //交易达成,支付期权token
     function deposite(uint32 _id)external{
         require(_tradeMes[_id]._tradeState==TimeLibrary.tradeState.found,"Not found");
+        require(block.timestamp<getClearTime()-5 minutes,"Time closed");
         uint256 buyerNftId=_tradeMes[_id].buyerNftId;
         uint256 sellerNftId=_tradeMes[_id].sellerNftId;
         address buyer=getNftOwner(buyerNftId);
@@ -220,6 +219,8 @@ contract TimeMarket is ITimeMarket{
         uint8 decimals=IERC20Metadata(targetToken).decimals();
         uint256 targetTokenAmount=amount*(10**decimals);
         IERC20(targetToken).safeTransferFrom(msg.sender,address(this),targetTokenAmount);
+        IERC20(targetToken).approve(timeCapitalPool,targetTokenAmount);
+        IERC20(targetToken).safeTransfer(timeCapitalPool,targetTokenAmount);
         uint256 nftId=mintNft(buyer,_id,targetTokenAmount,2,targetToken);
         _tradeMes[_id]._tradeState=TimeLibrary.tradeState.done;
         _tradeMes[_id].injectNftId=nftId;

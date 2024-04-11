@@ -14,8 +14,9 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
     using SafeERC20 for IERC20;
     
     uint256 private thisMarketId;
-
-    IPool private AaveV3Pool=IPool(0xcC6114B983E4Ed2737E9BD3961c9924e6216c704);
+    //sepolia:0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951
+    //mumbai:0xcC6114B983E4Ed2737E9BD3961c9924e6216c704
+    IPool private AaveV3Pool=IPool(0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951);
 
     constructor(uint256 _marketId){
         thisMarketId=_marketId;
@@ -27,17 +28,13 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
         IERC20(aToken).safeApprove(timeMarket,approveAmount);
     }
 
-    function changeAaveV3Pool(address _pool)external{
-        AaveV3Pool=IPool(_pool);
-    }
-
     //交易成功,买家提取期权token
     function buyerWithdrawShareOption(uint32 _id)external{
         require(getTradeMes(_id)._tradeState==TimeLibrary.tradeState.done,"Invalid order");
         uint256 injectNftId=getTradeMes(_id).injectNftId;
         address thisNftOwner=ownerOf(injectNftId);
         require(msg.sender==thisNftOwner,"Non owner");
-        // require(block.timestamp>getClearTime(),"Time has not arrived");
+        require(block.timestamp>getClearTime(),"Time has not arrived");
         //购买预期代币的数量
         address targetToken=getTargetToken();
         uint256 amount=getTradeMes(_id).amount;
@@ -57,7 +54,7 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
         uint256 sellerNftId=getTradeMes(_id).sellerNftId;
         address thisNftOwner=ownerOf(sellerNftId);
         require(msg.sender==thisNftOwner,"Non owner");
-        // require(block.timestamp>getClearTime(),"Time has not arrived");
+        require(block.timestamp>getClearTime(),"Time has not arrived");
         //卖家质押的违约金+对手方money
         uint256 amount=getNftTradeIdValue(sellerNftId)*2;
         address usedToken=getTradeMes(_id).usedToken;
@@ -85,7 +82,7 @@ contract TimeCapitalPool is TimeERC721, ITimeCapitalPool{
         uint256 buyerNftId=getTradeMes(_id).buyerNftId;
         address thisNftOwner=ownerOf(buyerNftId);
         require(msg.sender==thisNftOwner,"Non owner");
-        // require(block.timestamp>getClearTime(),"Time has not arrived");
+        require(block.timestamp>getClearTime(),"Time has not arrived");
         //退还个人存的以及卖家的违约金
         uint256 amount=getNftTradeIdValue(buyerNftId)*2;
         address usedToken=getTradeMes(_id).usedToken;

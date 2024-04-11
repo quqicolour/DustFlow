@@ -1,6 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
 require('dotenv').config();
-// require("@nomiclabs/hardhat-etherscan");
 
 
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
@@ -13,8 +12,8 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 module.exports = {
   networks: {
-    PolygonMumbai: {
-      url: process.env.POLYGON_MUMBAI,
+    sepolia: {
+      url: process.env.OP_SEPOLIA,
       accounts: [process.env.PRIVATE_KEY]
     },
   },
