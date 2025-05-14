@@ -1,6 +1,24 @@
+import chalk from "chalk";
 import { NomicLabsHardhatPluginError } from "hardhat/plugins";
 
 import { pluginName } from "./constants";
+
+export class HardhatEtherscanPluginError extends NomicLabsHardhatPluginError {
+  constructor(
+    name: string,
+    message: string,
+    parent?: Error,
+    shouldBeReported = false
+  ) {
+    super(name, message, parent, shouldBeReported);
+
+    console.warn(
+      chalk.yellow(
+        "DEPRECATION WARNING: 'hardhat-etherscan' has been deprecated in favor of 'hardhat-verify'. You can find more information about the migration in the readme."
+      )
+    );
+  }
+}
 
 export function throwUnsupportedNetwork(
   networkName: string,
@@ -15,5 +33,5 @@ To see the list of supported networks, run this command:
 
   npx hardhat verify --list-networks`.trimStart();
 
-  throw new NomicLabsHardhatPluginError(pluginName, message);
+  throw new HardhatEtherscanPluginError(pluginName, message);
 }

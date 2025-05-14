@@ -1,6 +1,5 @@
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
-
 import { pluginName } from "../constants";
+import { HardhatEtherscanPluginError } from "../errors";
 import { sendGetRequest } from "../undici";
 
 const COMPILERS_LIST_URL = "https://solc-bin.ethereum.org/bin/list.json";
@@ -19,7 +18,7 @@ export async function getLongVersion(shortVersion: string): Promise<string> {
   const fullVersion = versions.releases[shortVersion];
 
   if (fullVersion === undefined || fullVersion === "") {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       "Given solc version doesn't exist"
     );
@@ -35,7 +34,7 @@ export async function getVersions(): Promise<CompilersList> {
 
     if (!(response.statusCode >= 200 && response.statusCode <= 299)) {
       const responseText = await response.body.text();
-      throw new NomicLabsHardhatPluginError(
+      throw new HardhatEtherscanPluginError(
         pluginName,
         `HTTP response is not ok. Status code: ${response.statusCode} Response text: ${responseText}`
       );
@@ -43,7 +42,7 @@ export async function getVersions(): Promise<CompilersList> {
 
     return (await response.body.json()) as CompilersList;
   } catch (error: any) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `Failed to obtain list of solc versions. Reason: ${error.message}`,
       error

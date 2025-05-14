@@ -2,7 +2,15 @@
 
 # hardhat-etherscan
 
-[Hardhat](https://hardhat.org) plugin for integration with [Etherscan](https://etherscan.io)'s contract verification service.
+The `@nomiclabs/hardhat-etherscan` plugin is deprecated in favor of our new [`@nomicfoundation/hardhat-verify`](/packages/hardhat-verify) plugin.
+
+## Migrating to `hardhat-verify`
+
+`hardhat-verify` is a drop-in replacement of `hardhat-etherscan`. To migrate to it:
+
+1. Uninstall the `@nomiclabs/hardhat-etherscan` package
+2. Install the `@nomicfoundation/hardhat-verify` package
+3. Update your Hardhat config to import `@nomicfoundation/hardhat-verify` instead of `@nomiclabs/hardhat-etherscan`
 
 ## What
 

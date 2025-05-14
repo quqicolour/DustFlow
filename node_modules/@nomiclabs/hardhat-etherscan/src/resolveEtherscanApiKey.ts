@@ -1,6 +1,6 @@
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
 import { pluginName } from "./constants";
 import { EtherscanConfig } from "./types";
+import { HardhatEtherscanPluginError } from "./errors";
 
 export const resolveEtherscanApiKey = (
   apiKey: EtherscanConfig["apiKey"],
@@ -24,7 +24,7 @@ export const resolveEtherscanApiKey = (
 };
 
 function throwMissingApiKeyError(network: string): never {
-  throw new NomicLabsHardhatPluginError(
+  throw new HardhatEtherscanPluginError(
     pluginName,
     `You are trying to verify a contract in '${network}', but no API token was found for this network. Please provide one in your hardhat config. For example:
 

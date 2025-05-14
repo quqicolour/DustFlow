@@ -1,11 +1,11 @@
 import type LodashT from "lodash";
 
 import chalk from "chalk";
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
 import { ConfigExtender } from "hardhat/types";
 import { chainConfig } from "./ChainConfig";
 import { EtherscanConfig } from "./types";
 import { pluginName } from "./constants";
+import { HardhatEtherscanPluginError } from "./errors";
 
 export const verifyAllowedChains = (etherscanConfig: EtherscanConfig) => {
   if (
@@ -26,7 +26,7 @@ export const verifyAllowedChains = (etherscanConfig: EtherscanConfig) => {
   const invalidNetwork = actual.find((chain) => !allowedChains.includes(chain));
 
   if (invalidNetwork !== undefined) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `You set an Etherscan API token for the network "${invalidNetwork}" but the plugin doesn't support it, or it's spelled incorrectly.
 

@@ -12,7 +12,7 @@ export async function getEtherscanEndpoints(
   customChains: CustomChain[]
 ): Promise<EtherscanNetworkEntry> {
   const chainIdsToNames = new Map(
-    entries(chainConfig).map(([chainName, config]) => [
+    Object.entries(chainConfig).map(([chainName, config]) => [
       config.chainId,
       chainName,
     ])
@@ -61,8 +61,4 @@ The selected network is ${networkName}.`
     );
   }
   return deployedBytecode;
-}
-
-function entries<O>(o: O) {
-  return Object.entries(o) as Array<[keyof O, O[keyof O]]>;
 }

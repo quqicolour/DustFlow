@@ -1,9 +1,9 @@
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
 import { Dispatcher } from "undici";
 
 import { pluginName } from "../constants";
 import { sendGetRequest, sendPostRequest } from "../undici";
 
+import { HardhatEtherscanPluginError } from "../errors";
 import {
   EtherscanCheckStatusRequest,
   EtherscanVerifyRequest,
@@ -26,7 +26,7 @@ export async function verifyContract(
   try {
     response = await sendPostRequest(new URL(url), parameters.toString());
   } catch (error: any) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `Failed to send contract verification request.
 Endpoint URL: ${url}
@@ -38,7 +38,7 @@ Reason: ${error.message}`,
   if (!(response.statusCode >= 200 && response.statusCode <= 299)) {
     // This could be always interpreted as JSON if there were any such guarantee in the Etherscan API.
     const responseText = await response.body.text();
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `Failed to send contract verification request.
 Endpoint URL: ${url}
@@ -49,7 +49,7 @@ The HTTP server response is not ok. Status code: ${response.statusCode} Response
   const etherscanResponse = new EtherscanResponse(await response.body.json());
 
   if (etherscanResponse.isBytecodeMissingInNetworkError()) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `Failed to send contract verification request.
 Endpoint URL: ${url}
@@ -61,7 +61,7 @@ try to wait for five confirmations of your contract deployment transaction befor
   }
 
   if (!etherscanResponse.isOk()) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       etherscanResponse.message
     );
@@ -87,10 +87,10 @@ export async function getVerificationStatus(
       const responseText = await response.body.text();
       const message = `The HTTP server response is not ok. Status code: ${response.statusCode} Response text: ${responseText}`;
 
-      throw new NomicLabsHardhatPluginError(pluginName, message);
+      throw new HardhatEtherscanPluginError(pluginName, message);
     }
   } catch (error: any) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `Failure during etherscan status polling. The verification may still succeed but
 should be checked manually.
@@ -113,7 +113,7 @@ Reason: ${error.message}`,
   }
 
   if (!etherscanResponse.isOk()) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `The Etherscan API responded with a failure status.
 The verification may still succeed but should be checked manually.

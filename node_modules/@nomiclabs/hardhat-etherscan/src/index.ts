@@ -5,7 +5,6 @@ import {
   TASK_COMPILE_SOLIDITY_GET_DEPENDENCY_GRAPH,
 } from "hardhat/builtin-tasks/task-names";
 import { extendConfig, subtask, task, types } from "hardhat/config";
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
 import {
   ActionType,
   Artifacts,
@@ -67,6 +66,7 @@ import { getLongVersion } from "./solc/version";
 import "./type-extensions";
 import { EtherscanNetworkEntry, EtherscanURLs } from "./types";
 import { buildContractUrl, printSupportedNetworks } from "./util";
+import { HardhatEtherscanPluginError } from "./errors";
 
 interface VerificationArgs {
   address?: string;
@@ -148,7 +148,7 @@ const verify: ActionType<VerificationArgs> = async (
   }
 
   if (address === undefined) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       "You didn’t provide any address. Please re-run the 'verify' task with the address of the contract you want to verify."
     );
@@ -191,7 +191,7 @@ const verifySubtask: ActionType<VerificationSubtaskArgs> = async (
 
   const { isAddress } = await import("@ethersproject/address");
   if (!isAddress(address)) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `${address} is an invalid address.`
     );
@@ -199,7 +199,7 @@ const verifySubtask: ActionType<VerificationSubtaskArgs> = async (
 
   // This can only happen if the subtask is invoked from within Hardhat by a user script or another task.
   if (!Array.isArray(constructorArguments)) {
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `The constructorArguments parameter should be an array.
 If your constructor has no arguments pass an empty array. E.g:
@@ -268,7 +268,7 @@ Possible causes are:
   - Wrong compiler version selected in hardhat config.
   - The given address is wrong.
   - The selected network (${network.name}) is wrong.`;
-    throw new NomicLabsHardhatPluginError(pluginName, message);
+    throw new HardhatEtherscanPluginError(pluginName, message);
   }
 
   // Make sure that contract artifacts are up-to-date.
@@ -300,7 +300,7 @@ Possible causes are:
     const ovmSolcVersion = configCopy.ovm?.solcVersion;
     if (ovmSolcVersion === undefined) {
       const message = `It looks like you are verifying an OVM contract, but do not have an OVM solcVersion specified in the hardhat config.`;
-      throw new NomicLabsHardhatPluginError(pluginName, message);
+      throw new HardhatEtherscanPluginError(pluginName, message);
     }
     contractInformation.solcVersion = `v${ovmSolcVersion}`; // Etherscan requires the leading `v` before the version string
   }
@@ -372,7 +372,7 @@ Keep in mind that this verification failure may be due to passing in the wrong
 address for one of these libraries:
 ${undetectableLibraryNames}`;
   }
-  throw new NomicLabsHardhatPluginError(pluginName, errorMessage);
+  throw new HardhatEtherscanPluginError(pluginName, errorMessage);
 };
 
 subtask(TASK_VERIFY_GET_CONSTRUCTOR_ARGUMENTS)
@@ -405,7 +405,7 @@ subtask(TASK_VERIFY_GET_CONSTRUCTOR_ARGUMENTS)
           .default;
 
         if (!Array.isArray(constructorArguments)) {
-          throw new NomicLabsHardhatPluginError(
+          throw new HardhatEtherscanPluginError(
             pluginName,
             `The module ${constructorArgsModulePath} doesn't export a list. The module should look like this:
 
@@ -415,7 +415,7 @@ subtask(TASK_VERIFY_GET_CONSTRUCTOR_ARGUMENTS)
 
         return constructorArguments;
       } catch (error: any) {
-        throw new NomicLabsHardhatPluginError(
+        throw new HardhatEtherscanPluginError(
           pluginName,
           `Importing the module for the constructor arguments list failed.
 Reason: ${error.message}`,
@@ -443,7 +443,7 @@ subtask(TASK_VERIFY_GET_LIBRARIES)
         const libraries = (await import(librariesModulePath)).default;
 
         if (typeof libraries !== "object" || Array.isArray(libraries)) {
-          throw new NomicLabsHardhatPluginError(
+          throw new HardhatEtherscanPluginError(
             pluginName,
             `The module ${librariesModulePath} doesn't export a dictionary. The module should look like this:
 
@@ -453,7 +453,7 @@ subtask(TASK_VERIFY_GET_LIBRARIES)
 
         return libraries;
       } catch (error: any) {
-        throw new NomicLabsHardhatPluginError(
+        throw new HardhatEtherscanPluginError(
           pluginName,
           `Importing the module for the libraries dictionary failed.
 Reason: ${error.message}`,
@@ -513,7 +513,7 @@ for verification on the block explorer. Waiting for verification result...
   }
 
   // Reaching this point shouldn't be possible unless the API is behaving in a new way.
-  throw new NomicLabsHardhatPluginError(
+  throw new HardhatEtherscanPluginError(
     pluginName,
     `The API responded with an unexpected message.
 Contract verification may have succeeded and should be checked manually.
@@ -581,7 +581,7 @@ Possible causes are:
   - Solidity compiler settings were modified after the deployment was executed (like the optimizer, target EVM, etc.).
   - The given address is wrong.
   - The selected network (${network.name}) is wrong.`;
-    throw new NomicLabsHardhatPluginError(pluginName, message);
+    throw new HardhatEtherscanPluginError(pluginName, message);
   }
   if (contractMatches.length > 1) {
     const nameList = contractMatches
@@ -604,7 +604,7 @@ If you are running the verify subtask from within Hardhat instead:
     <other args>,
     contract: "contracts/Example.sol:ExampleContract"
   };`;
-    throw new NomicLabsHardhatPluginError(pluginName, message, undefined, true);
+    throw new HardhatEtherscanPluginError(pluginName, message, undefined, true);
   }
   return contractMatches[0];
 }
@@ -626,7 +626,7 @@ subtask(TASK_VERIFY_GET_COMPILER_VERSIONS).setAction(
         return !semver.satisfies(version, supportedSolcVersionRange);
       })
     ) {
-      throw new NomicLabsHardhatPluginError(
+      throw new HardhatEtherscanPluginError(
         pluginName,
         `Etherscan only supports compiler versions 0.4.11 and higher.
 See https://etherscan.io/solcversions for more information.`
@@ -666,7 +666,7 @@ subtask(TASK_VERIFY_GET_CONTRACT_INFORMATION)
       if (contractFQN !== undefined) {
         // Check this particular contract
         if (!isFullyQualifiedName(contractFQN)) {
-          throw new NomicLabsHardhatPluginError(
+          throw new HardhatEtherscanPluginError(
             pluginName,
             `A valid fully qualified name was expected. Fully qualified names look like this: "contracts/AContract.sol:TheContract"
 Instead, this name was received: ${contractFQN}`
@@ -674,7 +674,7 @@ Instead, this name was received: ${contractFQN}`
         }
 
         if (!(await artifacts.artifactExists(contractFQN))) {
-          throw new NomicLabsHardhatPluginError(
+          throw new HardhatEtherscanPluginError(
             pluginName,
             `The contract ${contractFQN} is not present in your project.`
           );
@@ -684,7 +684,7 @@ Instead, this name was received: ${contractFQN}`
         const buildInfo = await artifacts.getBuildInfo(contractFQN);
 
         if (buildInfo === undefined) {
-          throw new NomicLabsHardhatPluginError(
+          throw new HardhatEtherscanPluginError(
             pluginName,
             `The contract ${contractFQN} is present in your project, but we couldn't find its sources.
 Please make sure that it has been compiled by Hardhat and that it is written in Solidity.`
@@ -703,7 +703,7 @@ Please make sure that it has been compiled by Hardhat and that it is written in 
             versionDetails = `the solidity version ${inferredSolcVersion}`;
           }
 
-          throw new NomicLabsHardhatPluginError(
+          throw new HardhatEtherscanPluginError(
             pluginName,
             `The contract ${contractFQN} is being compiled with ${buildInfo.solcVersion}.
 However, the contract found in the address provided as argument has its bytecode marked with ${versionDetails}.
@@ -725,7 +725,7 @@ Possible causes are:
         );
 
         if (contractInformation === null) {
-          throw new NomicLabsHardhatPluginError(
+          throw new HardhatEtherscanPluginError(
             pluginName,
             `The address provided as argument contains a contract, but its bytecode doesn't match the contract ${contractFQN}.
 
@@ -880,7 +880,7 @@ function assertHardhatPluginInvariant(
   message: string
 ): asserts invariant {
   if (!invariant) {
-    throw new NomicLabsHardhatPluginError(pluginName, message, undefined, true);
+    throw new HardhatEtherscanPluginError(pluginName, message, undefined, true);
   }
 }
 

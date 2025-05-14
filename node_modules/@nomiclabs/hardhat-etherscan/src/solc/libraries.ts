@@ -1,7 +1,6 @@
-import { NomicLabsHardhatPluginError } from "hardhat/plugins";
-
 import { pluginName } from "../constants";
 
+import { HardhatEtherscanPluginError } from "../errors";
 import { ContractInformation, ResolvedLinks } from "./bytecode";
 
 export interface Libraries {
@@ -84,7 +83,7 @@ Visit https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan#lib
 
 To solve this, you can add them to your --libraries dictionary with their corresponding addresses.`;
     }
-    throw new NomicLabsHardhatPluginError(pluginName, message);
+    throw new HardhatEtherscanPluginError(pluginName, message);
   }
   return { libraryLinks: mergedLibraryLinks, undetectableLibraries };
 }
@@ -122,7 +121,7 @@ function mergeLibraries(
     detected address: ${conflict.detectedAddress}`
       )
       .join("\n");
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `The following detected library addresses are different from the ones provided:
 ${conflictDescriptions}
@@ -166,7 +165,7 @@ async function normalizeLibraries(
     libraries
   )) {
     if (!isAddress(linkedLibraryAddress)) {
-      throw new NomicLabsHardhatPluginError(
+      throw new HardhatEtherscanPluginError(
         pluginName,
         `You gave a link for the contract ${contractName} with the library ${linkedLibraryName}, but provided this invalid address: ${linkedLibraryAddress}`
       );
@@ -185,7 +184,7 @@ async function normalizeLibraries(
     // for it to be given twice in the libraries user input:
     // once as a library name and another as a fully qualified library name.
     if (libraryFQNs.has(neededLibraryFQN)) {
-      throw new NomicLabsHardhatPluginError(
+      throw new HardhatEtherscanPluginError(
         pluginName,
         `The library names ${neededLibrary.libName} and ${neededLibraryFQN} refer to the same library and were given as two entries in the libraries dictionary.
 Remove one of them and review your libraries dictionary before proceeding.`
@@ -237,7 +236,7 @@ Libraries marked as optional don't need to be specified since their addresses ar
     } else {
       detailedMessage += "This contract doesn't use any external libraries.";
     }
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `You gave an address for the library ${linkedLibraryName} in the libraries dictionary, which is not one of the libraries of contract ${contractName}.
 ${detailedMessage}`
@@ -249,7 +248,7 @@ ${detailedMessage}`
       .map(({ sourceName, libName }) => `${sourceName}:${libName}`)
       .map((x) => `  * ${x}`)
       .join("\n");
-    throw new NomicLabsHardhatPluginError(
+    throw new HardhatEtherscanPluginError(
       pluginName,
       `The library name ${linkedLibraryName} is ambiguous for the contract ${contractName}.
 It may resolve to one of the following libraries:
