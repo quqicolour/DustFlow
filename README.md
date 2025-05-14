@@ -1,4 +1,4 @@
-# TimeFlow
+# DustFlow
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)]
 
@@ -27,14 +27,14 @@ A decentralized pre-market trading platform based on the RWA stablecoin DUST.
 | **Order Cancellation** (if market open)      | 0.5%     |
 
 ## Architecture
-- [TimeFlow Architecture] <https://timeflow-docs.vercel.app/docs/architecture>
+- [DustFlow Architecture] <https://DustFlow-docs.vercel.app/docs/architecture>
 - **Smart Contracts**: Core on-chain logic for order management and settlement.
 - **Off-Chain Modules**: Matching engine, auction algorithms, and monitoring services.
 - **RWA Integration**: External services to mint and redeem DUST against real-world assets.
 
 ## Future
 1. Improve the functions of the RWA stablecoin DUST, introduce lending into DUST, and use DUST as the mainstream yield aggregator for RWA stablecoins;  
-2. List TimeFlow Payment on the apple store and open the SDK access and documentation;  
+2. List DustFlow Payment on the apple store and open the SDK access and documentation;  
 3. Explore the application of Pre-Market in futures trading, for example: trading the futures of ETH for 2026.1.1.  
 
 ## Getting Started
@@ -45,8 +45,8 @@ A decentralized pre-market trading platform based on the RWA stablecoin DUST.
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/VineFiLabs/TimeFlow.git
-cd TimeFlow
+git clone https://github.com/quqicolour/DustFlow.git
+cd DustFlow
 
 # Install dependencies
 npm install  # or yarn
@@ -56,8 +56,7 @@ npm install  # or yarn
 Create a `.env` file with the following variables:
 ```
 RPC_URL=<Your Ethereum RPC URL>
-PRIVATE_KEY=<Your deployer account private key>
-DUST_TOKEN_ADDRESS=<Deployed RWA-backed DUST token contract>
+PRIVATE_KEY1=<Your deployer account private key>
 ```
 
 ## Usage
