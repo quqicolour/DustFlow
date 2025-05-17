@@ -10,8 +10,9 @@ interface IDustPool{
         uint256 shareAmount;
         uint256 captureAmount;
         uint256 startAmount;
-        uint256 startTotalShare;
+        uint256 startExtractedAmount;
         uint256 startBurnShare;
+        uint256 number;
     }
 
 

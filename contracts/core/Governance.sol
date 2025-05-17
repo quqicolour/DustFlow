@@ -7,23 +7,26 @@ contract Governance is IGovernance {
     
     address public owner;
     address public manager;
-    address dustFlowFactory;
+    address public collateral;
+    address public dustFlowFactory;
     
     
     mapping(address => FeeInfo) private feeInfo;
 
     constructor(
-        address _dust,
         address _owner, 
         address _manager,
+        address _collateral,
+        address _dustPool,
         address _feeReceiver
     )
     {
         owner = _owner;
         manager = _manager;
+        collateral = _collateral;
         feeInfo[address(this)] = FeeInfo({
             feeReceiver: _feeReceiver,
-            dust: _dust,
+            dustPool: _dustPool,
             rate: 50
         });
     }
@@ -39,9 +42,6 @@ contract Governance is IGovernance {
     }
 
     mapping(uint256 => MarketConfig) private marketConfig;
-
-    
-    
     mapping(address => mapping(uint256 => bool)) private userJoinInfoState;
     mapping(address => uint256[]) private userJoinInfoGroup;
 
@@ -58,35 +58,13 @@ contract Governance is IGovernance {
     }
     function changeFeeInfo(
         address newFeeReceiver,
-        address newDust,
+        address newDustPool,
         uint8 newRate
     ) external onlyOwner {
         require(newRate < 100, "Invalid rate");
         feeInfo[address(this)].feeReceiver = newFeeReceiver;
-        feeInfo[address(this)].dust = newDust;
+        feeInfo[address(this)].dustPool = newDustPool;
         feeInfo[address(this)].rate = newRate;
-    }
-
-    function initMarketConfig(
-        uint256 _marketId, 
-        address _collateral
-    ) external onlyManager {
-        require(marketConfig[_marketId].initializeState == false, "Already initialize");
-        marketConfig[_marketId].collateral = _collateral;
-        marketConfig[_marketId].initializeState = true;
-    }
-
-    function changeDustFlowFactory(
-        address _dustFlowFactory
-    ) external onlyManager {
-        dustFlowFactory = _dustFlowFactory;
-    }
-
-    function changeCollateral(
-        uint256 _marketId, 
-        address _collateral
-    ) external onlyManager {
-        marketConfig[_marketId].collateral = _collateral;
     }
 
     function setMarketConfig(
@@ -96,6 +74,27 @@ contract Governance is IGovernance {
     ) external onlyManager {
         marketConfig[_marketId].waitToken = _waitToken;
         marketConfig[_marketId].endTime = _endTime + block.timestamp;
+    }
+    
+    function changeCollateral(
+        uint256 _marketId, 
+        address _collateral
+    ) external onlyManager {
+        marketConfig[_marketId].collateral = _collateral;
+    }
+
+    function initMarketConfig(
+        uint256 _marketId
+    ) external onlyManager {
+        require(marketConfig[_marketId].initializeState == false, "Already initialize");
+        marketConfig[_marketId].collateral = collateral;
+        marketConfig[_marketId].initializeState = true;
+    }
+
+    function changeDustFlowFactory(
+        address _dustFlowFactory
+    ) external onlyManager {
+        dustFlowFactory = _dustFlowFactory;
     }
     
     function join(address user, uint256 marketId) external {

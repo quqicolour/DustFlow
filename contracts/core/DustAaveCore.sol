@@ -4,6 +4,8 @@ pragma solidity ^0.8.23;
 import {Dust} from "./Dust.sol";
 import {IDustCore} from "../interfaces/IDustCore.sol";
 
+import {IPool} from "../interfaces/aave/IPool.sol";
+
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -15,7 +17,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * @author One of the members of VineLabs, 0xlive
  */
 
-contract DustCore is Dust, ReentrancyGuard, IDustCore {
+contract DustAaveCore is Dust, ReentrancyGuard, IDustCore {
     using SafeERC20 for IERC20;
 
     bytes1 private immutable ZEROBYTES1;
@@ -28,18 +30,24 @@ contract DustCore is Dust, ReentrancyGuard, IDustCore {
     address public owner;
     address public manager;
     address public collateral;
+    address public aToken;
     address public feeReceiver;
+    address public aavePool;
     address public dustPool;
 
     uint256 public flowId;
     uint256 public totalCollateral;
 
     constructor(
+        address _aavePool,
+        address _aToken,
         address _owner, 
         address _manager, 
         address _feeReceiver, 
         uint16 _feeRate
     ) {
+        aavePool = _aavePool;
+        aToken = _aToken;
         owner = _owner;
         manager = _manager;
         feeReceiver = _feeReceiver;
@@ -76,6 +84,17 @@ contract DustCore is Dust, ReentrancyGuard, IDustCore {
         address olderManager = manager;
         manager = _newManager;
         emit ChangeManager(olderManager, manager);
+    }
+
+    function setAave(
+        uint16 _referralCode,
+        address _aavePool, 
+        address _aToken
+    ) external onlyOwner {
+        referralCode = _referralCode;
+        aavePool = _aavePool;
+        aToken = _aToken;
+        emit UpdateAave(referralCode, aavePool);
     }
     
     function setFeeInfo(
@@ -134,10 +153,19 @@ contract DustCore is Dust, ReentrancyGuard, IDustCore {
             revert AmountErr(0x00);
         }
         IERC20(collateral).safeTransferFrom(msg.sender, address(this), amount);
-        totalCollateral += amount;
-        emit MintDUST(msg.sender, amount, mintAmount);
-        if(_mint(msg.sender, mintAmount) != true){
-            revert MintErr("Mint fail");
+        uint256 collateralBalance = _getUserTokenBalance(collateral, address(this));
+        if(collateralBalance > 0){
+            IERC20(collateral).approve(aavePool, collateralBalance);
+            emit MintDUST(msg.sender, amount, mintAmount);
+            if(_mint(msg.sender, mintAmount) != true){
+                revert MintErr("Mint fail");
+            }
+            totalCollateral += amount;
+            if(_aaveSupply(collateral, collateralBalance) != true){
+                revert AaveSupplyErr("Supply fail");
+            }
+        }else {
+            revert AmountErr(0x00);
         }
     }
 
@@ -159,8 +187,20 @@ contract DustCore is Dust, ReentrancyGuard, IDustCore {
         if(refundAmount == 0){
             revert AmountErr(0x00);
         }
+        uint256 uint256Max = type(uint256).max;
+        if(_aaveWithdraw(collateral, uint256Max) != true){
+            revert AaveWithdrawErr("Withdraw fail");
+        }
         IERC20(collateral).safeTransfer(msg.sender, refundAmount);
         totalCollateral -= refundAmount;
+
+        uint256 collateralAfterBalance = _getUserTokenBalance(collateral, address(this));
+        if(collateralAfterBalance > 0){
+            IERC20(collateral).approve(aavePool, collateralAfterBalance);
+            if(_aaveSupply(collateral, collateralAfterBalance) != true){
+                revert AaveSupplyErr("Supply fail");
+            }
+        }
         emit Refund(msg.sender, refundAmount, amount);
         if(_burn(msg.sender, amount) != true){
             revert BurnErr("Burn fail");
@@ -194,6 +234,18 @@ contract DustCore is Dust, ReentrancyGuard, IDustCore {
                 }
             }else{
                 IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
+                if(token == collateral){
+                    uint256 collateralBalance = _getUserTokenBalance(collateral, address(this));
+                    if(collateralBalance > 0){
+                        IERC20(collateral).approve(aavePool, collateralBalance);
+                        if(_aaveSupply(collateral, collateralBalance) != true){
+                            revert AaveSupplyErr("Supply fail");
+                        }
+                        totalCollateral += amount;
+                    }else {
+                        revert AmountErr(0x00);
+                    }
+                }
             }
             dustFlowInfo[flowId] = DustFlowInfo({
                 way: way,
@@ -228,7 +280,23 @@ contract DustCore is Dust, ReentrancyGuard, IDustCore {
                 revert MintErr("Mint fail");
             }
         }else {
-            IERC20(token).safeTransfer(receiver, withdrawAmount);
+            if(token == collateral){
+                uint256 uint256Max = type(uint256).max;
+                if(_aaveWithdraw(collateral, uint256Max) != true){
+                    revert AaveWithdrawErr("Withdraw fail");
+                }
+                IERC20(collateral).safeTransfer(msg.sender, withdrawAmount);
+                totalCollateral -= withdrawAmount;
+                uint256 collateralAfterBalance = _getUserTokenBalance(collateral, address(this));
+                if(collateralAfterBalance > 0){
+                    IERC20(collateral).approve(aavePool, collateralAfterBalance);
+                    if(_aaveSupply(collateral, collateralAfterBalance) != true){
+                        revert AaveSupplyErr("Supply fail");
+                    }
+                }
+            }else{
+                IERC20(token).safeTransfer(receiver, withdrawAmount);
+            }
         }
         emit FlowReceive(receiver, token, withdrawAmount);
     }
@@ -243,6 +311,24 @@ contract DustCore is Dust, ReentrancyGuard, IDustCore {
 
     function _checkBlacklist(address user) private view {
         require(blacklist[user] == false, "blacklist");
+    }
+
+    function _aaveSupply(address asset, uint256 amount) private returns (bool state) {
+        IPool(aavePool).deposit(asset, amount, address(this), referralCode);
+        state = true;
+    }
+
+    function _aaveWithdraw(address asset, uint256 amount) private returns (bool state) {
+        // uint256 aTokenBalance = _getUserTokenBalance(aToken, address(this));
+        IERC20(aToken).approve(aavePool, amount);
+        IPool(aavePool).withdraw(asset, amount, address(this));
+        uint256 currentCollateralBalance = _getUserTokenBalance(collateral, address(this));
+        if(currentCollateralBalance > totalCollateral + MINIMUM_LIQUIDITY){
+            uint256 profit = currentCollateralBalance - totalCollateral - MINIMUM_LIQUIDITY;
+            IERC20(collateral).safeTransfer(feeReceiver, profit * (10000 - feeRate) / 10000);
+            IERC20(collateral).safeTransfer(dustPool, profit * feeRate / 10000);
+        }
+        state = true;
     }
 
     function _getTokenDecimals(

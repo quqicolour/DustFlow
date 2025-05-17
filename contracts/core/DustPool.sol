@@ -76,7 +76,7 @@ contract DustPool is IDustPool, ReentrancyGuard {
             "At least more than 10 ** decmials"
         );
         uint256 share;
-        if (totalShare == 0) {
+        if (totalShare == 0 || reserve0 == 0) {
             share = amount - MINIMUM_LIQUIDITY;
         } else {
             share = (amount * totalShare) / reserve0;
@@ -84,28 +84,34 @@ contract DustPool is IDustPool, ReentrancyGuard {
         totalPledge += amount;
         _updateReserve();
         IERC20(dust).safeTransferFrom(msg.sender, address(this), amount);
-
-        uint256 stageReserve1Revenue = reserve1 +
-            extracted -
-            userInfo[msg.sender].startAmount;
-        uint256 stageTotalShare = totalShare +
-            burnShare -
-            userInfo[msg.sender].startBurnShare;
-        uint256 revenue = DustFlowLibrary._getCurrentRevenue(
-            share,
-            stageTotalShare,
-            stageReserve1Revenue,
-            userInfo[msg.sender].captureAmount
-        );
+        uint256 stageReserve1Revenue;
+        uint256 stageTotalShare;
+        uint256 revenue;
+        if (userInfo[msg.sender].number > 0) {
+            stageReserve1Revenue =
+                reserve1 + userInfo[msg.sender].startExtractedAmount - 
+                extracted - userInfo[msg.sender].startAmount;
+            stageTotalShare =
+                totalShare +
+                burnShare -
+                userInfo[msg.sender].startBurnShare;
+            revenue = DustFlowLibrary._getCurrentRevenue(
+                share,
+                stageTotalShare,
+                stageReserve1Revenue,
+                userInfo[msg.sender].captureAmount
+            );
+        }
         if (revenue > 0) {
             userInfo[msg.sender].captureAmount += revenue;
         }
 
         userInfo[msg.sender].dustAmount += amount;
         userInfo[msg.sender].shareAmount += share;
-        userInfo[msg.sender].startTotalShare = totalShare;
+        userInfo[msg.sender].startExtractedAmount = extracted;
         userInfo[msg.sender].startBurnShare = burnShare;
         userInfo[msg.sender].startAmount = reserve1;
+        userInfo[msg.sender].number++;
         emit Deposite(msg.sender, share, amount);
         require(_update(Way.inject, amount, share, revenue), "Update fail");
     }
@@ -114,9 +120,9 @@ contract DustPool is IDustPool, ReentrancyGuard {
         _updateReserve();
         uint256 userShareAmount = userInfo[msg.sender].shareAmount;
         uint256 userDustAmount = userInfo[msg.sender].dustAmount;
-        uint256 stageReserve1Revenue = reserve1 +
-            extracted -
-            userInfo[msg.sender].startAmount;
+        uint256 stageReserve1Revenue = 
+                reserve1 + userInfo[msg.sender].startExtractedAmount - 
+                extracted - userInfo[msg.sender].startAmount;
         uint256 stageTotalShare = burnShare -
             userInfo[msg.sender].startBurnShare +
             totalShare;
@@ -200,22 +206,23 @@ contract DustPool is IDustPool, ReentrancyGuard {
         address user
     ) external view returns (uint256 dustAmount, uint256 rewardAmount) {
         uint256 userShareAmount = userInfo[user].shareAmount;
-        uint256 stageReserve1Revenue = _getUserTokenBalance(
-            rewardToken,
-            address(this)
-        ) +
-            extracted -
-            userInfo[user].startAmount;
-        uint256 stageTotalShare = totalShare +
-            burnShare -
-            userInfo[user].startBurnShare;
         dustAmount = userInfo[user].dustAmount;
-        rewardAmount = DustFlowLibrary._getCurrentRevenue(
-            userShareAmount,
-            stageTotalShare,
-            stageReserve1Revenue,
-            userInfo[user].captureAmount
-        );
+        if (userInfo[msg.sender].number > 0) {
+            uint256 stageReserve1Revenue = _getUserTokenBalance(
+                rewardToken,
+                address(this)
+            ) + userInfo[msg.sender].startExtractedAmount - 
+                extracted - userInfo[msg.sender].startAmount;
+            uint256 stageTotalShare = totalShare +
+                burnShare -
+                userInfo[user].startBurnShare;
+            rewardAmount = DustFlowLibrary._getCurrentRevenue(
+                userShareAmount,
+                stageTotalShare,
+                stageReserve1Revenue,
+                userInfo[user].captureAmount
+            );
+        }
     }
 
     function getTokenDecimals(address token) external view returns (uint8) {

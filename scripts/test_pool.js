@@ -62,6 +62,10 @@ async function main() {
     ethers.parseEther("1000000000")
   );
 
+  const transfer0 = await USDC.transfer(DustPoolAddress, ethers.parseEther("100"));
+  const transfer0Tx = await transfer0.wait();
+  console.log("transfer0:", transfer0Tx.hash);
+
   const deposite1 = await DustPool.deposite(
     ethers.parseEther("100")
   );
@@ -70,6 +74,9 @@ async function main() {
 
   const getUserInfo1 = await DustPool.getUserInfo(owner.address);
   console.log("getUserInfo1:", getUserInfo1);
+
+  const getAmounts0 = await DustPool.getAmounts(owner.address);
+  console.log("getAmounts0:", getAmounts0);
   
   const transfer1 = await USDC.transfer(DustPoolAddress, ethers.parseEther("100"));
   const transfer1Tx = await transfer1.wait();
@@ -120,6 +127,28 @@ async function main() {
 
   const usdcBalance3 = await DustPool.getTokenBalance(USDCAddress, DustPoolAddress);
   console.log("Usdc Balance3:", usdcBalance3);
+
+  const deposite3 = await DustPool.deposite(
+    ethers.parseEther("100")
+  );
+  const deposite3Tx = await deposite3.wait();
+  console.log("deposite3:", deposite3Tx.hash);
+
+  const getUserInfo4 = await DustPool.getUserInfo(owner.address);
+  console.log("getUserInfo4:", getUserInfo4);
+
+  const transfer4 = await USDC.transfer(DustPoolAddress, ethers.parseEther("100"));
+  const transfer4Tx = await transfer4.wait();
+  console.log("Transfer4 tx:", transfer4Tx.hash);
+
+  const totalShare = await DustPool.totalShare();
+  console.log("totalShare:", totalShare);
+
+  const extracted = await DustPool.extracted();
+  console.log("extracted:", extracted);
+
+  const getAmounts4 = await DustPool.getAmounts(owner.address);
+  console.log("getAmounts4:", getAmounts4);
 
 }
 

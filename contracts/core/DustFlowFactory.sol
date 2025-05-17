@@ -18,18 +18,18 @@ contract DustFlowFactory is IDustFlowFactory {
     function createMarket() external {
         address currentManager = IGovernance(governance).manager();
         require(msg.sender == currentManager);
-        address DustFlowCore = address(
+        address newDustFlowCore = address(
             new DustFlowCore{
                 salt: keccak256(abi.encodePacked(marketId, block.timestamp, block.chainid))
             }(governance, currentManager, marketId)
         );
         marketInfo[marketId] = MarketInfo({
-            market: DustFlowCore,
+            market: newDustFlowCore,
             createTime: uint64(block.timestamp)
         });
-        emit CreateMarket(marketId, DustFlowCore);
+        emit CreateMarket(marketId, newDustFlowCore);
         marketId++;
-        require(DustFlowCore != address(0), "Zero address");
+        require(newDustFlowCore != address(0), "Zero address");
     }
 
     function getMarketInfo(uint256 id) external view returns(MarketInfo memory) {

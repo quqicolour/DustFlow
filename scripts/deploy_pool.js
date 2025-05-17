@@ -52,13 +52,13 @@ async function main() {
 
   //
 
-  config.DustPool = DustPoolAddress;
   config.USDC = data.USDC;
   config.DTT = data.DTT;
   config.DustCore = data.DustCore;
+  config.DustPool = DustPoolAddress;
   (config.Governance = data.Governance),
-    (config.TimeFlowFactory = data.TimeFlowFactory),
-    (config.TimeFlowHelper = data.TimeFlowHelper);
+    (config.DustFlowFactory = data.DustFlowFactory),
+    (config.DustFlowHelper = data.DustFlowHelper);
   (config.market0 = data.market0),
     (config.market1 = data.market1),
     (config.updateTime = new Date().toISOString());

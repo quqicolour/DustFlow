@@ -2,6 +2,7 @@
 pragma solidity ^0.8.23;
 
 import {IGovernance} from "../interfaces/IGovernance.sol";
+import {IDustCore} from "../interfaces/IDustCore.sol";
 import {IDustFlowCore} from "../interfaces/IDustFlowCore.sol";
 import {IDustFlowFactory} from "../interfaces/IDustFlowFactory.sol";
 import {DustFlowLibrary} from "../libraries/DustFlowLibrary.sol";
@@ -526,6 +527,46 @@ contract DustFlowHelper {
             }
         }
         collateralTokenAmount = collateralTokenAmount * 2 - fee;
+    }
+
+    function indexUserSenderFlowInfos(
+        IDustCore.UserFlowState state,
+        address dust,
+        address user,
+        uint256 pageIndex
+    ) external view returns (
+        IDustCore.DustFlowInfo[] memory dustFlowInfoGroup,
+        uint128[] memory receiveAmountGroup
+    ) {
+        uint256 flowIdsLength = IDustCore(dust).getUserFlowIdsLength(user, state);
+        if (flowIdsLength > 0) {
+            uint256 len;
+            uint256 idIndex;
+            uint256 currentUserFlowId;
+            require(pageIndex <= flowIdsLength / 10, "PageIndex overflow");
+            if (flowIdsLength <= 10) {
+                len = flowIdsLength;
+            } else {
+                if (flowIdsLength % 10 == 0) {
+                    len = 10;
+                } else {
+                    len = flowIdsLength % 10;
+                }
+                if (pageIndex > 0) {
+                    idIndex = pageIndex * 10;
+                    currentUserFlowId = IDustCore(dust).getUserFlowId(user, state, idIndex);
+                }
+            }
+            dustFlowInfoGroup = new IDustCore.DustFlowInfo[](len);
+            receiveAmountGroup = new uint128[](len);
+            unchecked {
+                for (uint256 i; i < len; i++) {
+                    dustFlowInfoGroup[i] = IDustCore(dust).getDustFlowInfo(currentUserFlowId);
+                    receiveAmountGroup[i] = IDustCore(dust).getReceiveAmount(currentUserFlowId);
+                    currentUserFlowId++;
+                }
+            }
+        }
     }
 
     function _getMarket(uint256 marketId) private view returns(address) {

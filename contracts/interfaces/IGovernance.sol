@@ -5,15 +5,13 @@ interface IGovernance{
     
     struct FeeInfo{
         address feeReceiver;
-        address dust;
+        address dustPool;
         uint8 rate;
     }
     
     struct MarketConfig {
         address waitToken;
         address collateral;
-        address timeRedeemToken;
-        address timeDeptToken;
         uint256 endTime;
         bool initializeState;
     }

@@ -354,10 +354,10 @@ contract DustFlowCore is ReentrancyGuard, IDustFlowCore {
     function _safeTransferFee(address collateral, uint256 fee) private {
         uint256 dustFee = fee *  _getFeeInfo().rate / 100;
         uint256 protocolFee = fee * (100 -  _getFeeInfo().rate) / 100;
-        address dust = _getFeeInfo().dust;
+        address dustPool = _getFeeInfo().dustPool;
         address feeReceiver = _getFeeInfo().feeReceiver;
         //transfer to dust
-        IERC20(collateral).safeTransfer(dust, dustFee);
+        IERC20(collateral).safeTransfer(dustPool, dustFee);
         //transfer to feeReceiver
         IERC20(collateral).safeTransfer(feeReceiver, protocolFee);
     }
